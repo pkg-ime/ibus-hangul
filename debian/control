@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
 Build-Depends: debhelper (>= 5), autotools-dev, libhangul-dev, python-support,
- dpatch, swig, python-dev
+ dpatch, swig, python-dev, pkg-config
 Standards-Version: 3.8.0
 Homepage: http://code.google.com/p/ibus
 Vcs-Bzr: lp:~lidaobing/+junk/ibus-hangul
