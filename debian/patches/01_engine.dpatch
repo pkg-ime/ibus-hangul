@@ -1,0 +1,17 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 01_engine.dpatch by LI Daobing <lidaobing@gmail.com>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: ibus-engine-hangul should not be executed by user. So move it to /usr/share/ibus-hangul
+## DP: hangul.engine also need changed.
+
+@DPATCH@
+diff -urNad ibus-hangul-0.1.1.20081023~/engine/hangul.engine.in ibus-hangul-0.1.1.20081023/engine/hangul.engine.in
+--- ibus-hangul-0.1.1.20081023~/engine/hangul.engine.in	2008-08-16 17:49:28.000000000 +0800
++++ ibus-hangul-0.1.1.20081023/engine/hangul.engine.in	2008-12-30 22:48:10.000000000 +0800
+@@ -1,4 +1,4 @@
+-Exec=@prefix@/bin/ibus-engine-hangul
++Exec=@prefix@/share/@PACKAGE@/ibus-engine-hangul
+ Name=Hangul
+ Lang=ko
+ Icon=@prefix@/share/@PACKAGE@/icons/ibus-hangul.png
