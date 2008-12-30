@@ -1,0 +1,15 @@
+Source: ibus-hangul
+Section: utils
+Priority: optional
+Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
+Build-Depends: debhelper (>= 5), autotools-dev, libhangul-dev
+Standards-Version: 3.8.0
+Homepage: http://code.google.com/p/ibus
+Vcs-Bzr: lp:~lidaobing/+junk/ibus-hangul
+Vcs-Browser: https://code.launchpad.net/~lidaobing/+junk/ibus-hangul
+
+Package: ibus-hangul
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, ibus
+Description: hangul engine for IBus
+ IBus-Hangul is a IM Engine for Korea, based on IBus.
