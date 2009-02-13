@@ -14,4 +14,8 @@ Package: ibus-hangul
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ibus
 Description: hangul engine for IBus
+ IBus is an Intelligent Input Bus. It is a new input framework for Linux
+ OS. It provides full featured and user friendly input method user interface.
+ It also may help developers to develop input method easily.
+ .
  IBus-Hangul is an input method (IM) for Korea, based on IBus.
