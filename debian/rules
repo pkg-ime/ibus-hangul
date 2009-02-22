@@ -9,8 +9,6 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-include /usr/share/dpatch/dpatch.make
-
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
@@ -21,7 +19,7 @@ else
 CROSS= --build $(DEB_BUILD_GNU_TYPE)
 endif
 
-config.status: configure patch
+config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
 ifneq "$(wildcard /usr/share/misc/config.sub)" ""
@@ -30,7 +28,7 @@ endif
 ifneq "$(wildcard /usr/share/misc/config.guess)" ""
 	cp -f /usr/share/misc/config.guess config.guess
 endif
-	./configure $(CROSS) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info CFLAGS="$(CFLAGS)" LDFLAGS="-Wl,-z,defs"
+	dh_auto_configure
 
 
 build: build-stamp
@@ -40,8 +38,7 @@ build-stamp:  config.status
 	$(MAKE)
 	touch $@
 
-clean: clean0 unpatch
-clean0:
+clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
@@ -55,8 +52,6 @@ install: build
 	dh_prep  
 	dh_installdirs
 	$(MAKE) DESTDIR=$(CURDIR)/debian/ibus-hangul install
-	mv $(CURDIR)/debian/ibus-hangul/usr/bin/* $(CURDIR)/debian/ibus-hangul/usr/share/ibus-hangul/
-	rm -rf $(CURDIR)/debian/ibus-hangul/usr/bin
 
 binary-indep: install
 
@@ -79,4 +74,4 @@ binary-arch: install
 	dh_builddeb
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install clean0 patch unpatch
+.PHONY: build clean binary-indep binary-arch binary install
