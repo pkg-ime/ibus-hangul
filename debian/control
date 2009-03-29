@@ -1,8 +1,7 @@
 Source: ibus-hangul
 Section: utils
 Priority: optional
-Maintainer: Ubuntu MOTU Developers <ubuntu-motu@lists.ubuntu.com>
-XSBC-Original-Maintainer: LI Daobing <lidaobing@gmail.com>
+Maintainer: LI Daobing <lidaobing@gmail.com>
 Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev, python-support,
  swig, python-dev, pkg-config, libibus-dev
 Standards-Version: 3.8.0
@@ -13,9 +12,9 @@ Vcs-Browser: https://code.launchpad.net/~lidaobing/+junk/ibus-hangul
 Package: ibus-hangul
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, ibus
-Description: hangul engine for IBus
+Description: Hangul engine for IBus
  IBus is an Intelligent Input Bus. It is a new input framework for Linux
  OS. It provides full featured and user friendly input method user interface.
  It also may help developers to develop input method easily.
  .
- IBus-Hangul is an input method (IM) for Korea, based on IBus.
+ IBus-Hangul is an input method (IM) for Korean language, based on IBus.

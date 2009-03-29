@@ -1,11 +1,12 @@
-ibus-hangul (1.1.0.20090211-0ubuntu1~intepid1~ppa1) intrepid; urgency=low
+ibus-hangul (1.1.0.20090211-1) unstable; urgency=low
 
+  * initial release to Debian (closes: #521628)
   * new upstream release.
   * debian/control: build depends on libibus-dev.
   * debian/patches/01_engine.dpatch: no longer needed, removed.
   * no patch needed. remove dpatch from debian/*.
 
- -- LI Daobing <lidaobing@gmail.com>  Sun, 22 Feb 2009 21:29:47 +0800
+ -- LI Daobing <lidaobing@gmail.com>  Sun, 29 Mar 2009 11:01:52 +0800
 
 ibus-hangul (0.1.1.20081023-0ubuntu1) jaunty; urgency=low
 
