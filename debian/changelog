@@ -5,8 +5,9 @@ ibus-hangul (1.1.0.20090328-1) unstable; urgency=low
   * debian/control: build depends on libibus-dev.
   * debian/patches/01_engine.dpatch: no longer needed, removed.
   * no patch needed. remove dpatch from debian/*.
+  * debian/rules: install README and AUTHORS 
 
- -- LI Daobing <lidaobing@gmail.com>  Mon, 30 Mar 2009 20:03:23 +0800
+ -- LI Daobing <lidaobing@gmail.com>  Mon, 30 Mar 2009 20:07:22 +0800
 
 ibus-hangul (0.1.1.20081023-0ubuntu1) jaunty; urgency=low
 
