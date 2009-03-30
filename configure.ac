@@ -61,6 +61,9 @@ PKG_CHECK_MODULES(HANGUL, [
 AC_PATH_PROG(ENV, env)
 AC_SUBST(ENV)
 
+#check python
+AM_PATH_PYTHON([2.5])
+
 # define GETTEXT_* variables
 GETTEXT_PACKAGE=ibus-hangul
 AC_SUBST(GETTEXT_PACKAGE)
@@ -76,6 +79,9 @@ Makefile
 ibus-hangul.spec
 src/Makefile
 src/hangul.xml.in
+setup/Makefile
+setup/ibus-setup-hangul
+setup/config.py
 icons/Makefile
 m4/Makefile
 ])

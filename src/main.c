@@ -42,6 +42,8 @@ start_component (void)
     bus = ibus_bus_new ();
     g_signal_connect (bus, "disconnected", G_CALLBACK (ibus_disconnected_cb), NULL);
 
+    ibus_hangul_init (bus);
+
     component = ibus_component_new ("org.freedesktop.IBus.Hangul",
                                     N_("Hangul input method"),
                                     "0.1.0",
@@ -74,6 +76,8 @@ start_component (void)
     g_object_unref (component);
 
     ibus_main ();
+
+    ibus_hangul_exit ();
 }
 
 int

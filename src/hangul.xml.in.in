@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version=\"1.0\" encoding=\"utf-8\"?>
 <!-- filename: hangul.xml -->
 <component>
 	<name>org.freedesktop.IBus.Hangul</name>
@@ -8,7 +8,7 @@
 	<author>Peng Huang &lt;shawn.p.huang@gmail.com&gt;</author>
 	<license>GPL</license>
 	<homepage>http://code.google.com/p/ibus</homepage>
-	<textdomain>ibus-hanful</textdomain>
+	<textdomain>ibus-hangul</textdomain>
 
 	<engines>
 		<engine>
@@ -20,6 +20,7 @@
 			<layout>us</layout>
 			<longname>Hangul</longname>
 			<description>Hangul Input Method</description>
+			<rank>99</rank>
 		</engine>
 	</engines>
 

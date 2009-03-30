@@ -1,6 +1,6 @@
 # vim:set noet ts=4:
 #
-# ibus-anthy - The Anthy engine for IBus
+# ibus-hangul - The Hangul engine for IBus
 #
 # Copyright (c) 2007-2008 Huang Peng <shawn.p.huang@gmail.com>
 #
@@ -46,6 +46,7 @@ ibus_engine_hangul_CFLAGS = \
 	@IBUS_CFLAGS@ \
 	@HANGUL_CFLAGS@ \
 	-DPKGDATADIR=\"$(pkgdatadir)\" \
+	-DLIBEXECDIR=\"$(libexecdir)\" \
 	$(NULL)
 ibus_engine_hangul_LDFLAGS = \
 	@IBUS_LIBS@ \
