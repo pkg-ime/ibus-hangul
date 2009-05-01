@@ -12,6 +12,12 @@ ibus-hangul (1.1.0.20090328-0ubuntu1) karmic; urgency=low
 
  -- LI Daobing <lidaobing@debian.org>  Fri, 01 May 2009 12:42:43 +0800
 
+ibus-hangul (0.1.1.20081023-0ubuntu2) jaunty; urgency=low
+
+  * No changes. Rebuild to build with Python 2.6. (LP: #336534)
+
+ -- LI Daobing <lidaobing@gmail.com>  Sat, 14 Mar 2009 22:26:32 +0800
+
 ibus-hangul (0.1.1.20081023-0ubuntu1) jaunty; urgency=low
 
   * Initial release (LP: #312446)
