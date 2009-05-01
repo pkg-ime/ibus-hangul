@@ -1,7 +1,6 @@
-ibus-hangul (1.1.0.20090328-1) unstable; urgency=low
+ibus-hangul (1.1.0.20090328-0ubuntu1) karmic; urgency=low
 
-  * initial release to Debian (closes: #521628)
-  * new upstream release.
+  * new upstream release (LP: #370199).
   * debian/control: 
     - build depends on libibus-dev.
     - change maintainer's email.
@@ -11,7 +10,7 @@ ibus-hangul (1.1.0.20090328-1) unstable; urgency=low
   * no patch needed. remove dpatch from debian/*.
   * debian/rules: install README and AUTHORS 
 
- -- LI Daobing <lidaobing@debian.org>  Thu, 23 Apr 2009 20:13:52 +0800
+ -- LI Daobing <lidaobing@debian.org>  Fri, 01 May 2009 12:42:43 +0800
 
 ibus-hangul (0.1.1.20081023-0ubuntu1) jaunty; urgency=low
 
