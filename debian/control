@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: LI Daobing <lidaobing@debian.org>
 Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev, python-support,
- swig, python-dev, pkg-config, libibus-dev
+ swig, python-dev, pkg-config, libibus-dev (>= 1.2)
 Standards-Version: 3.8.1
 Homepage: http://code.google.com/p/ibus
 Vcs-Bzr: lp:~lidaobing/+junk/ibus-hangul
@@ -11,7 +11,7 @@ Vcs-Browser: https://code.launchpad.net/~lidaobing/+junk/ibus-hangul
 
 Package: ibus-hangul
 Architecture: any
-Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, ibus
+Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, ibus (>= 1.2)
 Description: Hangul engine for IBus
  IBus is an Intelligent Input Bus. It is a new input framework for Linux
  OS. It provides full featured and user friendly input method user interface.

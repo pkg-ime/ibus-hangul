@@ -1,3 +1,12 @@
+ibus-hangul (1.2.0.20090617-1) unstable; urgency=low
+
+  * new upstream release.
+  * debian/control:
+    - build-depends: libibus-dev >= 1.2
+    - depends: ibus >= 1.2
+
+ -- LI Daobing <lidaobing@debian.org>  Sat, 20 Jun 2009 23:24:13 +0800
+
 ibus-hangul (1.1.0.20090328-0ubuntu1) karmic; urgency=low
 
   * new upstream release (LP: #370199).
