@@ -4,8 +4,24 @@ ibus-hangul (1.2.0.20090617-1) unstable; urgency=low
   * debian/control:
     - build-depends: libibus-dev >= 1.2
     - depends: ibus >= 1.2
+    - bump standards version to 3.8.2
 
- -- LI Daobing <lidaobing@debian.org>  Sat, 20 Jun 2009 23:24:13 +0800
+ -- LI Daobing <lidaobing@debian.org>  Fri, 26 Jun 2009 23:46:15 +0800
+
+ibus-hangul (1.1.0.20090328-1) unstable; urgency=low
+
+  * initial release to Debian (closes: #521628)
+  * new upstream release.
+  * debian/control: 
+    - build depends on libibus-dev.
+    - change maintainer's email.
+    - bump standards version to 3.8.1.
+    - depends on ${python:Depends}.
+  * debian/patches/01_engine.dpatch: no longer needed, removed.
+  * no patch needed. remove dpatch from debian/*.
+  * debian/rules: install README and AUTHORS 
+
+ -- LI Daobing <lidaobing@debian.org>  Thu, 23 Apr 2009 20:13:52 +0800
 
 ibus-hangul (1.1.0.20090328-0ubuntu1) karmic; urgency=low
 

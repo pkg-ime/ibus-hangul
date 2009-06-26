@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: LI Daobing <lidaobing@debian.org>
 Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev, python-support,
  swig, python-dev, pkg-config, libibus-dev (>= 1.2)
-Standards-Version: 3.8.1
+Standards-Version: 3.8.2
 Homepage: http://code.google.com/p/ibus
 Vcs-Bzr: lp:~lidaobing/+junk/ibus-hangul
 Vcs-Browser: https://code.launchpad.net/~lidaobing/+junk/ibus-hangul
