@@ -1,3 +1,10 @@
+ibus-hangul (1.2.0.20090617-2) UNRELEASED; urgency=low
+
+  * debian/control:
+    - build-depends: libhangul-dev >= 0.0.9
+
+ -- LI Daobing <lidaobing@debian.org>  Sat, 27 Jun 2009 13:52:08 +0800
+
 ibus-hangul (1.2.0.20090617-1) unstable; urgency=low
 
   * new upstream release.
