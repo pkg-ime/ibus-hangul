@@ -9,6 +9,7 @@ ibus-hangul (1.2.0.20090617-2) UNRELEASED; urgency=low
   * Drop /usr/share/misc/config.{sub,.guess} conditionals since these are
     always present (thanks to autotools-dev bdep).
   * Pass -s to dh_* in binary-arch.
+  * Cleanup rules droppping boilerplate comments and superfluous whitespace.
 
  -- LI Daobing <lidaobing@debian.org>  Sat, 27 Jun 2009 13:52:08 +0800
 
