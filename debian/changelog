@@ -8,6 +8,7 @@ ibus-hangul (1.2.0.20090617-2) UNRELEASED; urgency=low
   * Drop useless CROSS logic in rules; build uses dh_auto_configure.
   * Drop /usr/share/misc/config.{sub,.guess} conditionals since these are
     always present (thanks to autotools-dev bdep).
+  * Pass -s to dh_* in binary-arch.
 
  -- LI Daobing <lidaobing@debian.org>  Sat, 27 Jun 2009 13:52:08 +0800
 
