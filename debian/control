@@ -3,7 +3,8 @@ Section: utils
 Priority: optional
 Maintainer: LI Daobing <lidaobing@debian.org>
 Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev (>= 0.0.9),
- python-support, swig, python-dev (>= 2.5), pkg-config, libibus-dev (>= 1.2)
+ python-support, swig, python-dev (>= 2.5), pkg-config, libibus-dev (>= 1.2),
+ intltool
 Standards-Version: 3.8.2
 Homepage: http://code.google.com/p/ibus
 XS-Python-Version: >= 2.5

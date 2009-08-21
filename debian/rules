@@ -12,6 +12,7 @@ build: build-stamp
 build-stamp: config.status
 	dh_testdir
 	$(MAKE)
+	cd po; intltool-update --pot
 	touch $@
 
 clean:
