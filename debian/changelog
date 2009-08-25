@@ -1,7 +1,18 @@
 ibus-hangul (1.2.0.20090617-2) UNRELEASED; urgency=low
 
+  [ LI Daobing ]
   * debian/control:
     - build-depends: libhangul-dev >= 0.0.9
+
+  [ Loïc Minier ]
+  * Drop useless CROSS logic in rules; build uses dh_auto_configure.
+  * Drop /usr/share/misc/config.{sub,.guess} conditionals since these are
+    always present (thanks to autotools-dev bdep).
+  * Pass -s to dh_* in binary-arch.
+  * Cleanup rules droppping boilerplate comments and superfluous whitespace.
+  * Add XS-Python-Version/XB-Python-Version: fields.
+  * Version the python-dev bdep to >= 2.5.
+  * Update pot file during build; bdep on intltool.
 
  -- LI Daobing <lidaobing@debian.org>  Sat, 27 Jun 2009 13:52:08 +0800
 
