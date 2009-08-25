@@ -3,6 +3,7 @@ ibus-hangul (1.2.0.20090617-2) unstable; urgency=low
   [ LI Daobing ]
   * debian/control:
     - build-depends: libhangul-dev >= 0.0.9
+    - bump standards version to 3.8.3
 
   [ Loïc Minier ]
   * Drop useless CROSS logic in rules; build uses dh_auto_configure.
@@ -14,7 +15,7 @@ ibus-hangul (1.2.0.20090617-2) unstable; urgency=low
   * Version the python-dev bdep to >= 2.5.
   * Update pot file during build; bdep on intltool.
 
- -- LI Daobing <lidaobing@debian.org>  Tue, 25 Aug 2009 19:32:44 +0800
+ -- LI Daobing <lidaobing@debian.org>  Tue, 25 Aug 2009 19:36:06 +0800
 
 ibus-hangul (1.2.0.20090617-1) unstable; urgency=low
 
