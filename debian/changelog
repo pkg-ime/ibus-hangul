@@ -1,3 +1,9 @@
+ibus-hangul (1.2.0.20090617-3) UNRELEASED; urgency=low
+
+  * debian/control: update Vcs-* field. 
+
+ -- LI Daobing <lidaobing@debian.org>  Tue, 25 Aug 2009 19:40:26 +0800
+
 ibus-hangul (1.2.0.20090617-2) unstable; urgency=low
 
   [ LI Daobing ]
