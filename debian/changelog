@@ -1,8 +1,9 @@
-ibus-hangul (1.2.0.20090617-3) UNRELEASED; urgency=low
+ibus-hangul (1.2.0.20091031-1) unstable; urgency=low
 
+  * new upstream release.
   * debian/control: update Vcs-* field. 
 
- -- LI Daobing <lidaobing@debian.org>  Tue, 25 Aug 2009 19:40:26 +0800
+ -- LI Daobing <lidaobing@debian.org>  Sun, 01 Nov 2009 14:39:18 +0800
 
 ibus-hangul (1.2.0.20090617-2) unstable; urgency=low
 
