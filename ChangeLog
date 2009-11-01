@@ -1,9 +1,101 @@
-commit 52b879e455eb363be93a38df706069be38efa957
-Merge: c483f25 db93bf1
-Author: Peng Huang <shawn.p.huang@gmail.com>
-Date:   2009-06-17 18:12:09 +0800
+commit 81f078f9a746c5df59a983128a17d24b0f81867d
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-10-31 17:02:04 +0900
 
-    Merge commit 'origin/master'
+    add i18n.h to Makefile.am's file list
+
+M	src/Makefile.am
+
+commit aafec9609201809862ee1670e2a32398a2dc51b3
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-10-31 16:51:02 +0900
+
+    use libhangul 0.0.10 to enable romaja method
+
+M	configure.ac
+
+commit 51c0a9aa0be8f15c003a454031f820c673cd6039
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-10-31 16:47:31 +0900
+
+    change hanja mode label
+    
+        * change the button label to 'Hanja lock'
+        * use gettext package for translation
+        * update po files
+
+M	po/ko.po
+M	po/zh_CN.po
+M	src/Makefile.am
+M	src/engine.c
+A	src/i18n.h
+M	src/main.c
+
+commit 30d420c2c05ee45f3af2b826b216f1e6c7413849
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-10-17 12:56:06 +0900
+
+    implement romaja method
+    
+     * use libhangul's romaja routine
+
+M	po/ko.po
+M	po/zh_CN.po
+M	setup/main.py
+
+commit 9890507cc1941abab2e14c3827de5096e020aa24
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-09-19 13:45:58 +0900
+
+    Add symbol character table feature
+    
+     * add symbol.txt data file
+     * look up symbol table file first, then hanja table.
+
+M	Makefile.am
+M	configure.ac
+A	data/Makefile.am
+A	data/symbol.txt
+M	src/Makefile.am
+M	src/engine.c
+
+commit 8e29fe045005dffa50bd34092d44095105c752c1
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-09-19 00:50:12 +0900
+
+    Refactoring hanja mode code
+    
+     * check visibility before hide lookup table.
+       If the engine hide again invisible lookup table, then ibus client doesn't
+       work correctly. Selected text will be delete with non input key, such as
+       arrow keys.
+     * simplify update lookup table routine.
+
+M	po/ko.po
+M	po/zh_CN.po
+M	src/engine.c
+M	src/ustring.c
+
+commit 9934e32affcaaeab891a18bea6c434bb73662664
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-08-31 14:45:02 +0900
+
+    Implementation of Hanja mode
+    
+     * Add hanja mode property
+     * Add ibus level preedit string
+
+M	src/Makefile.am
+M	src/engine.c
+A	src/ustring.c
+A	src/ustring.h
+
+commit 5acb8229d28851816c6361c9d10dd050be653a12
+Merge: c483f25 db93bf1
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-06-20 21:37:30 +0900
+
+    Merge branch 'master' of git://github.com/phuang/ibus-hangul
 
 commit c483f257b0fa99307621b713e7c06ec6ed2001a3
 Author: Choe Hwanjin <choe.hwanjin@gmail.com>
