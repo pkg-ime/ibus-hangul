@@ -41,13 +41,20 @@ ibus_engine_hangul_SOURCES = \
 	main.c \
 	engine.c \
 	engine.h \
+	ustring.c \
+	ustring.h \
+	i18n.h \
 	$(NULL)
+
 ibus_engine_hangul_CFLAGS = \
 	@IBUS_CFLAGS@ \
 	@HANGUL_CFLAGS@ \
 	-DPKGDATADIR=\"$(pkgdatadir)\" \
+	-DLOCALEDIR=\"$(localedir)\" \
 	-DLIBEXECDIR=\"$(libexecdir)\" \
+	-DIBUSHANGUL_DATADIR=\"$(datadir)/ibus-hangul\" \
 	$(NULL)
+
 ibus_engine_hangul_LDFLAGS = \
 	@IBUS_LIBS@ \
 	@HANGUL_LIBS@ \

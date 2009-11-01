@@ -1,9 +1,16 @@
 /* vim:set et sts=4: */
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
 
 #include <ibus.h>
 #include <hangul.h>
 #include <string.h>
+
+#include "i18n.h"
 #include "engine.h"
+#include "ustring.h"
+
 
 typedef struct _IBusHangulEngine IBusHangulEngine;
 typedef struct _IBusHangulEngineClass IBusHangulEngineClass;
@@ -13,11 +20,15 @@ struct _IBusHangulEngine {
 
     /* members */
     HangulInputContext *context;
+    UString* preedit;
     gboolean hangul_mode;
+    gboolean hanja_mode;
     HanjaList* hanja_list;
 
     IBusLookupTable *table;
+
     IBusProperty    *hangul_mode_prop;
+    IBusProperty    *prop_hanja_mode;
     IBusPropList    *prop_list;
 };
 
@@ -74,14 +85,22 @@ static void ibus_hangul_engine_property_hide
 static void ibus_hangul_engine_flush        (IBusHangulEngine       *hangul);
 static void ibus_hangul_engine_update_preedit_text
                                             (IBusHangulEngine       *hangul);
+
+static void ibus_hangul_engine_update_lookup_table
+					    (IBusHangulEngine	    *hangul);
 static void ibus_config_value_changed       (IBusConfig             *config,
                                              const gchar            *section,
                                              const gchar            *name,
                                              GValue                 *value,
                                              gpointer                user_data);
 
+static void	lookup_table_set_visible    (IBusLookupTable *table,
+					     gboolean flag);
+static gboolean	lookup_table_is_visible	    (IBusLookupTable *table);
+
 static IBusEngineClass *parent_class = NULL;
 static HanjaTable *hanja_table = NULL;
+static HanjaTable *symbol_table = NULL;
 static IBusConfig *config = NULL;
 static GString    *hangul_keyboard;
 
@@ -120,6 +139,8 @@ ibus_hangul_init (IBusBus *bus)
 
     hanja_table = hanja_table_load (NULL);
 
+    symbol_table = hanja_table_load (IBUSHANGUL_DATADIR "/data/symbol.txt");
+
     config = ibus_bus_get_config (bus);
 
     hangul_keyboard = g_string_new_len ("2", 8);
@@ -136,6 +157,9 @@ ibus_hangul_exit (void)
 {
     hanja_table_delete (hanja_table);
     hanja_table = NULL;
+
+    hanja_table_delete (symbol_table);
+    symbol_table = NULL;
 
     g_object_unref (config);
     config = NULL;
@@ -182,21 +206,37 @@ ibus_hangul_engine_init (IBusHangulEngine *hangul)
     IBusText* tooltip;
 
     hangul->context = hangul_ic_new (hangul_keyboard->str);
+    hangul->preedit = ustring_new();
     hangul->hanja_list = NULL;
     hangul->hangul_mode = TRUE;
-    label = ibus_text_new_from_string("Setup");
-    tooltip = ibus_text_new_from_string("Configure hangul engine");
+    hangul->hanja_mode = FALSE;
+
+    hangul->prop_list = ibus_prop_list_new ();
+
+    label = ibus_text_new_from_string (_("Hanja lock"));
+    tooltip = ibus_text_new_from_string (_("Enable/Disable Hanja mode"));
+    prop = ibus_property_new ("hanja_mode",
+                              PROP_TYPE_TOGGLE,
+                              label,
+			      NULL,
+                              tooltip,
+                              TRUE, TRUE, PROP_STATE_UNCHECKED, NULL);
+    g_object_unref (label);
+    g_object_unref (tooltip);
+    ibus_prop_list_append (hangul->prop_list, prop);
+    hangul->prop_hanja_mode = prop;
+
+    label = ibus_text_new_from_string (_("Setup"));
+    tooltip = ibus_text_new_from_string (_("Configure hangul engine"));
     prop = ibus_property_new ("setup",
                               PROP_TYPE_NORMAL,
                               label,
 			      "gtk-preferences",
                               tooltip,
-                              TRUE, TRUE, 0, NULL);
+                              TRUE, TRUE, PROP_STATE_UNCHECKED, NULL);
     g_object_unref (label);
     g_object_unref (tooltip);
-
-    hangul->prop_list = ibus_prop_list_new ();
-    ibus_prop_list_append (hangul->prop_list,  prop);
+    ibus_prop_list_append (hangul->prop_list, prop);
 
     hangul->table = ibus_lookup_table_new (9, 0, TRUE, FALSE);
 
@@ -248,46 +288,63 @@ ibus_hangul_engine_destroy (IBusHangulEngine *hangul)
 static void
 ibus_hangul_engine_update_preedit_text (IBusHangulEngine *hangul)
 {
-    const gunichar *str;
+    const ucschar *hic_preedit;
     IBusText *text;
+    UString *preedit;
+    gint preedit_len;
 
-    str = hangul_ic_get_preedit_string (hangul->context);
+    // ibus-hangul's preedit string is made up of ibus context's
+    // internal preedit string and libhangul's preedit string.
+    // libhangul only supports one syllable preedit string.
+    // In order to make longer preedit string, ibus-hangul maintains
+    // internal preedit string.
+    hic_preedit = hangul_ic_get_preedit_string (hangul->context);
 
-    if (str != NULL && str[0] != 0) {
-        text = ibus_text_new_from_ucs4 (str);
-        ibus_text_append_attribute (text, IBUS_ATTR_TYPE_FOREGROUND, 0x00ffffff, 0, -1);
-        ibus_text_append_attribute (text, IBUS_ATTR_TYPE_BACKGROUND, 0x00000000, 0, -1);
+    preedit = ustring_dup (hangul->preedit);
+    preedit_len = ustring_length(preedit);
+    ustring_append_ucs4 (preedit, hic_preedit, -1);
+
+    if (ustring_length(preedit) > 0) {
+        text = ibus_text_new_from_ucs4 ((gunichar*)preedit->data);
+	// ibus-hangul's internal preedit string
+        ibus_text_append_attribute (text, IBUS_ATTR_TYPE_UNDERLINE,
+		IBUS_ATTR_UNDERLINE_SINGLE, 0, preedit_len);
+	// Preedit string from libhangul context.
+	// This is currently composing syllable.
+        ibus_text_append_attribute (text, IBUS_ATTR_TYPE_FOREGROUND,
+		0x00ffffff, preedit_len, -1);
+	ibus_text_append_attribute (text, IBUS_ATTR_TYPE_BACKGROUND,
+		0x00000000, preedit_len, -1);
         ibus_engine_update_preedit_text ((IBusEngine *)hangul,
                                          text,
                                          ibus_text_get_length (text),
                                          TRUE);
         g_object_unref (text);
-    }
-    else {
+    } else {
         text = ibus_text_new_from_static_string ("");
         ibus_engine_update_preedit_text ((IBusEngine *)hangul, text, 0, FALSE);
         g_object_unref (text);
     }
+
+    ustring_delete(preedit);
 }
 
 static void
-ibus_hangul_engine_update_auxiliary_text (IBusHangulEngine *hangul)
+ibus_hangul_engine_update_lookup_table_ui (IBusHangulEngine *hangul)
 {
     guint cursor_pos;
     const char* comment;
     IBusText* text;
 
+    // update aux text
     cursor_pos = ibus_lookup_table_get_cursor_pos (hangul->table);
     comment = hanja_list_get_nth_comment (hangul->hanja_list, cursor_pos);
 
     text = ibus_text_new_from_string (comment);
     ibus_engine_update_auxiliary_text ((IBusEngine *)hangul, text, TRUE);
     g_object_unref (text);
-}
 
-static void
-ibus_hangul_engine_update_lookup_table (IBusHangulEngine *hangul)
-{
+    // update lookup table
     ibus_engine_update_lookup_table ((IBusEngine *)hangul, hangul->table, TRUE);
 }
 
@@ -295,14 +352,27 @@ static void
 ibus_hangul_engine_commit_current_candidate (IBusHangulEngine *hangul)
 {
     guint cursor_pos;
+    const char* key;
     const char* value;
+    int key_len;
+    int preedit_len;
+    int len;
+
     IBusText* text;
 
-    hangul_ic_reset (hangul->context);
-    ibus_hangul_engine_update_preedit_text (hangul);
-
     cursor_pos = ibus_lookup_table_get_cursor_pos (hangul->table);
+    key = hanja_list_get_nth_key (hangul->hanja_list, cursor_pos);
     value = hanja_list_get_nth_value (hangul->hanja_list, cursor_pos);
+
+    key_len = g_utf8_strlen(key, -1);
+    preedit_len = ustring_length(hangul->preedit);
+
+    len = MIN(key_len, preedit_len);
+    ustring_erase (hangul->preedit, 0, len);
+    if (key_len > preedit_len)
+	hangul_ic_reset (hangul->context);
+
+    ibus_hangul_engine_update_preedit_text (hangul);
 
     text = ibus_text_new_from_string (value);
     ibus_engine_commit_text ((IBusEngine *)hangul, text);
@@ -310,54 +380,88 @@ ibus_hangul_engine_commit_current_candidate (IBusHangulEngine *hangul)
 }
 
 static void
-ibus_hangul_engine_open_lookup_table (IBusHangulEngine *hangul)
+ibus_hangul_engine_update_hanja_list (IBusHangulEngine *hangul)
 {
     char* utf8;
-    const gunichar* str;
+    const ucschar* hic_preedit;
+    UString* preedit;
 
-    str = hangul_ic_get_preedit_string (hangul->context);
-    utf8 = g_ucs4_to_utf8 (str, -1, NULL, NULL, NULL);
-    if (utf8 != NULL) {
-        HanjaList* list = hanja_table_match_suffix (hanja_table, utf8);
-        if (list != NULL) {
-            int i, n;
-            n = hanja_list_get_size (list);
+    if (hangul->hanja_list != NULL) {
+	hanja_list_delete (hangul->hanja_list);
+	hangul->hanja_list = NULL;
+    }
 
-            ibus_lookup_table_clear (hangul->table);
-            for (i = 0; i < n; i++) {
-                const char* value = hanja_list_get_nth_value (list, i);
-                IBusText* text = ibus_text_new_from_string (value);
-                ibus_lookup_table_append_candidate (hangul->table, text);
-                g_object_unref (text);
-            }
+    hic_preedit = hangul_ic_get_preedit_string (hangul->context);
 
-            hanja_list_delete (hangul->hanja_list);
-            hangul->hanja_list = list;
+    preedit = ustring_dup (hangul->preedit);
+    ustring_append_ucs4 (preedit, hic_preedit, -1);
+    if (ustring_length(preedit) > 0) {
+	utf8 = ustring_to_utf8 (preedit, -1);
+	if (utf8 != NULL) {
+	    if (symbol_table != NULL)
+		hangul->hanja_list = hanja_table_match_prefix (symbol_table, utf8);
+	    if (hangul->hanja_list == NULL)
+		hangul->hanja_list = hanja_table_match_prefix (hanja_table, utf8);
+	    g_free (utf8);
+	}
+    }
 
-            ibus_lookup_table_set_cursor_pos (hangul->table, 0);
-            ibus_hangul_engine_update_auxiliary_text (hangul);
-            ibus_hangul_engine_update_lookup_table (hangul);
-        }
-        g_free (utf8);
+    ustring_delete (preedit);
+}
+
+
+static void
+ibus_hangul_engine_apply_hanja_list (IBusHangulEngine *hangul)
+{
+    HanjaList* list = hangul->hanja_list;
+    if (list != NULL) {
+	int i, n;
+	n = hanja_list_get_size (list);
+
+	ibus_lookup_table_clear (hangul->table);
+	for (i = 0; i < n; i++) {
+	    const char* value = hanja_list_get_nth_value (list, i);
+	    IBusText* text = ibus_text_new_from_string (value);
+	    ibus_lookup_table_append_candidate (hangul->table, text);
+	    g_object_unref (text);
+	}
+
+	ibus_lookup_table_set_cursor_pos (hangul->table, 0);
+	ibus_hangul_engine_update_lookup_table_ui (hangul);
+	lookup_table_set_visible (hangul->table, TRUE);
     }
 }
 
 static void
-ibus_hangul_engine_close_lookup_table (IBusHangulEngine *hangul)
+ibus_hangul_engine_hide_lookup_table (IBusHangulEngine *hangul)
 {
-    ibus_engine_hide_lookup_table ((IBusEngine *)hangul);
-    ibus_engine_hide_auxiliary_text ((IBusEngine *)hangul);
-    hanja_list_delete (hangul->hanja_list);
-    hangul->hanja_list = NULL;
+    gboolean is_visible;
+    is_visible = lookup_table_is_visible (hangul->table);
+
+    // Sending hide lookup table message when the lookup table
+    // is not visible results wrong behavior. So I have to check
+    // whether the table is visible or not before to hide.
+    if (is_visible) {
+	ibus_engine_hide_lookup_table ((IBusEngine *)hangul);
+	ibus_engine_hide_auxiliary_text ((IBusEngine *)hangul);
+	lookup_table_set_visible (hangul->table, FALSE);
+    }
+
+    if (hangul->hanja_list != NULL) {
+	hanja_list_delete (hangul->hanja_list);
+	hangul->hanja_list = NULL;
+    }
 }
 
 static void
-ibus_hangul_engine_toggle_lookup_table (IBusHangulEngine *hangul)
+ibus_hangul_engine_update_lookup_table (IBusHangulEngine *hangul)
 {
+    ibus_hangul_engine_update_hanja_list (hangul);
+
     if (hangul->hanja_list != NULL) {
-        ibus_hangul_engine_close_lookup_table (hangul);
+        ibus_hangul_engine_apply_hanja_list (hangul);
     } else {
-        ibus_hangul_engine_open_lookup_table (hangul);
+        ibus_hangul_engine_hide_lookup_table (hangul);
     }
 }
 
@@ -367,10 +471,17 @@ ibus_hangul_engine_process_candidate_key_event (IBusHangulEngine    *hangul,
                                                 guint                modifiers)
 {
     if (keyval == IBUS_Escape) {
-        ibus_hangul_engine_close_lookup_table (hangul);
+        ibus_hangul_engine_hide_lookup_table (hangul);
+	return TRUE;
     } else if (keyval == IBUS_Return) {
 	ibus_hangul_engine_commit_current_candidate (hangul);
-        ibus_hangul_engine_close_lookup_table (hangul);
+
+	if (hangul->hanja_mode) {
+	    ibus_hangul_engine_update_lookup_table (hangul);
+	} else {
+	    ibus_hangul_engine_hide_lookup_table (hangul);
+	}
+	return TRUE;
     } else if (keyval >= IBUS_1 && keyval <= IBUS_9) {
 	guint page_no;
 	guint page_size;
@@ -384,50 +495,60 @@ ibus_hangul_engine_process_candidate_key_event (IBusHangulEngine    *hangul,
 	ibus_lookup_table_set_cursor_pos (hangul->table, cursor_pos);
 
 	ibus_hangul_engine_commit_current_candidate (hangul);
-        ibus_hangul_engine_close_lookup_table (hangul);
+
+	if (hangul->hanja_mode) {
+	    ibus_hangul_engine_update_lookup_table (hangul);
+	} else {
+	    ibus_hangul_engine_hide_lookup_table (hangul);
+	}
+	return TRUE;
     } else if (keyval == IBUS_Left) {
         ibus_lookup_table_cursor_up (hangul->table);
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
+        ibus_hangul_engine_update_lookup_table_ui (hangul);
+	return TRUE;
     } else if (keyval == IBUS_Right) {
         ibus_lookup_table_cursor_down (hangul->table);
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
+        ibus_hangul_engine_update_lookup_table_ui (hangul);
+	return TRUE;
     } else if (keyval == IBUS_Up) {
         ibus_lookup_table_page_up (hangul->table);
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
+        ibus_hangul_engine_update_lookup_table_ui (hangul);
+	return TRUE;
     } else if (keyval == IBUS_Down) {
         ibus_lookup_table_page_down (hangul->table);
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
+        ibus_hangul_engine_update_lookup_table_ui (hangul);
+	return TRUE;
     } else if (keyval == IBUS_Page_Up) {
         ibus_lookup_table_page_up (hangul->table);
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
+        ibus_hangul_engine_update_lookup_table_ui (hangul);
+	return TRUE;
     } else if (keyval == IBUS_Page_Down) {
         ibus_lookup_table_page_down (hangul->table);
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
-    } else if (keyval == IBUS_h) {
-        ibus_lookup_table_cursor_up (hangul->table);
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
-    } else if (keyval == IBUS_l) {
-        ibus_lookup_table_cursor_down (hangul->table);
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
-    } else if (keyval == IBUS_k) {
-        ibus_lookup_table_page_up (hangul->table);
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
-    } else if (keyval == IBUS_j) {
-        ibus_lookup_table_page_down (hangul->table);
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
+        ibus_hangul_engine_update_lookup_table_ui (hangul);
+	return TRUE;
     }
 
-    return TRUE;
+    if (!hangul->hanja_mode) {
+	if (keyval == IBUS_h) {
+	    ibus_lookup_table_cursor_up (hangul->table);
+	    ibus_hangul_engine_update_lookup_table_ui (hangul);
+	    return TRUE;
+	} else if (keyval == IBUS_l) {
+	    ibus_lookup_table_cursor_down (hangul->table);
+	    ibus_hangul_engine_update_lookup_table_ui (hangul);
+	    return TRUE;
+	} else if (keyval == IBUS_k) {
+	    ibus_lookup_table_page_up (hangul->table);
+	    ibus_hangul_engine_update_lookup_table_ui (hangul);
+	    return TRUE;
+	} else if (keyval == IBUS_j) {
+	    ibus_lookup_table_page_down (hangul->table);
+	    ibus_hangul_engine_update_lookup_table_ui (hangul);
+	    return TRUE;
+	}
+    }
+
+    return FALSE;
 }
 
 static gboolean
@@ -439,7 +560,7 @@ ibus_hangul_engine_process_key_event (IBusEngine     *engine,
     IBusHangulEngine *hangul = (IBusHangulEngine *) engine;
 
     gboolean retval;
-    const gunichar *str;
+    const ucschar *str;
 
     if (modifiers & IBUS_RELEASE_MASK)
         return FALSE;
@@ -453,7 +574,11 @@ ibus_hangul_engine_process_key_event (IBusEngine     *engine,
         return FALSE;
 
     if (keyval == IBUS_F9 || keyval == IBUS_Hangul_Hanja) {
-	ibus_hangul_engine_toggle_lookup_table (hangul);
+	if (hangul->hanja_list == NULL) {
+	    ibus_hangul_engine_update_lookup_table (hangul);
+	} else {
+	    ibus_hangul_engine_hide_lookup_table (hangul);
+	}
 	return TRUE;
     }
 
@@ -461,8 +586,14 @@ ibus_hangul_engine_process_key_event (IBusEngine     *engine,
         return FALSE;
 
     if (hangul->hanja_list != NULL) {
-        return ibus_hangul_engine_process_candidate_key_event (hangul,
-                     keyval, modifiers);
+	retval = ibus_hangul_engine_process_candidate_key_event (hangul,
+		     keyval, modifiers);
+	if (hangul->hanja_mode) {
+	    if (retval)
+		return TRUE;
+	} else {
+	    return TRUE;
+	}
     }
 
     if (keyval == IBUS_BackSpace) {
@@ -472,13 +603,38 @@ ibus_hangul_engine_process_key_event (IBusEngine     *engine,
     }
 
     str = hangul_ic_get_commit_string (hangul->context);
-    if (str != NULL && str[0] != 0) {
-        IBusText *text = ibus_text_new_from_ucs4 (str);
-        ibus_engine_commit_text ((IBusEngine *)hangul, text);
-        g_object_unref (text);
+    if (hangul->hanja_mode) {
+	const ucschar* hic_preedit;
+
+	hic_preedit = hangul_ic_get_preedit_string (hangul->context);
+	if (hic_preedit != NULL && hic_preedit[0] != 0) {
+	    ustring_append_ucs4 (hangul->preedit, str, -1);
+	} else {
+	    IBusText *text;
+	    const ucschar* preedit;
+
+	    ustring_append_ucs4 (hangul->preedit, str, -1);
+	    if (ustring_length (hangul->preedit) > 0) {
+		preedit = ustring_begin (hangul->preedit);
+		text = ibus_text_new_from_ucs4 ((gunichar*)preedit);
+		ibus_engine_commit_text (engine, text);
+		g_object_unref (text);
+	    }
+	    ustring_clear (hangul->preedit);
+	}
+    } else {
+	if (str != NULL && str[0] != 0) {
+	    IBusText *text = ibus_text_new_from_ucs4 (str);
+	    ibus_engine_commit_text (engine, text);
+	    g_object_unref (text);
+	}
     }
 
     ibus_hangul_engine_update_preedit_text (hangul);
+
+    if (hangul->hanja_mode) {
+	ibus_hangul_engine_update_lookup_table (hangul);
+    }
 
     if (!retval)
         ibus_hangul_engine_flush (hangul);
@@ -510,11 +666,16 @@ ibus_hangul_engine_focus_in (IBusEngine *engine)
 {
     IBusHangulEngine *hangul = (IBusHangulEngine *) engine;
 
+    if (hangul->hanja_mode) {
+	hangul->prop_hanja_mode->state = PROP_STATE_CHECKED;
+    } else {
+	hangul->prop_hanja_mode->state = PROP_STATE_UNCHECKED;
+    }
+
     ibus_engine_register_properties (engine, hangul->prop_list);
 
     if (hangul->hanja_list != NULL) {
-        ibus_hangul_engine_update_lookup_table (hangul);
-        ibus_hangul_engine_update_auxiliary_text (hangul);
+        ibus_hangul_engine_update_lookup_table_ui (hangul);
     }
 
     parent_class->focus_in (engine);
@@ -542,7 +703,7 @@ ibus_hangul_engine_reset (IBusEngine *engine)
 
     ibus_hangul_engine_flush (hangul);
     if (hangul->hanja_list != NULL) {
-        ibus_hangul_engine_close_lookup_table (hangul);
+        ibus_hangul_engine_hide_lookup_table (hangul);
     }
     parent_class->reset (engine);
 }
@@ -579,8 +740,7 @@ ibus_hangul_engine_cursor_up (IBusEngine *engine)
 
     if (hangul->hanja_list != NULL) {
 	ibus_lookup_table_cursor_up (hangul->table);
-	ibus_hangul_engine_update_lookup_table (hangul);
-	ibus_hangul_engine_update_auxiliary_text (hangul);
+	ibus_hangul_engine_update_lookup_table_ui (hangul);
     }
 
     parent_class->cursor_up (engine);
@@ -593,8 +753,7 @@ ibus_hangul_engine_cursor_down (IBusEngine *engine)
 
     if (hangul->hanja_list != NULL) {
 	ibus_lookup_table_cursor_down (hangul->table);
-	ibus_hangul_engine_update_lookup_table (hangul);
-	ibus_hangul_engine_update_auxiliary_text (hangul);
+	ibus_hangul_engine_update_lookup_table_ui (hangul);
     }
 
     parent_class->cursor_down (engine);
@@ -621,6 +780,17 @@ ibus_hangul_engine_property_activate (IBusEngine    *engine,
         g_spawn_async (NULL, argv, NULL, 0, NULL, NULL, NULL, &error);
 
 	g_free(path);
+    } else if (strcmp(prop_name, "hanja_mode") == 0) {
+	IBusHangulEngine *hangul = (IBusHangulEngine *) engine;
+
+	hangul->hanja_mode = !hangul->hanja_mode;
+	if (hangul->hanja_mode) {
+	    hangul->prop_hanja_mode->state = PROP_STATE_CHECKED;
+	} else {
+	    hangul->prop_hanja_mode->state = PROP_STATE_UNCHECKED;
+	}
+
+	ibus_engine_update_property (engine, hangul->prop_hanja_mode);
     }
 }
 
@@ -640,4 +810,17 @@ ibus_config_value_changed (IBusConfig   *config,
             hangul_ic_select_keyboard (hangul->context, hangul_keyboard->str);
         }
     }
+}
+
+static void
+lookup_table_set_visible (IBusLookupTable *table, gboolean flag)
+{
+    g_object_set_data (G_OBJECT(table), "visible", GUINT_TO_POINTER(flag));
+}
+
+static gboolean
+lookup_table_is_visible (IBusLookupTable *table)
+{
+    gpointer res = g_object_get_data (G_OBJECT(table), "visible");
+    return GPOINTER_TO_UINT(res);
 }
