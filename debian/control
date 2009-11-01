@@ -2,7 +2,7 @@ Source: ibus-hangul
 Section: utils
 Priority: optional
 Maintainer: LI Daobing <lidaobing@debian.org>
-Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev (>= 0.0.9),
+Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev (>= 0.0.10),
  python-support, swig, python-dev (>= 2.5), pkg-config, libibus-dev (>= 1.2),
  intltool
 Standards-Version: 3.8.3
