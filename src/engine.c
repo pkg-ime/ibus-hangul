@@ -6,6 +6,7 @@
 #include <ibus.h>
 #include <hangul.h>
 #include <string.h>
+#include <ctype.h>
 
 #include "i18n.h"
 #include "engine.h"
@@ -27,13 +28,17 @@ struct _IBusHangulEngine {
 
     IBusLookupTable *table;
 
-    IBusProperty    *hangul_mode_prop;
     IBusProperty    *prop_hanja_mode;
     IBusPropList    *prop_list;
 };
 
 struct _IBusHangulEngineClass {
 	IBusEngineClass parent;
+};
+
+struct KeyEvent {
+    guint keyval;
+    guint modifiers;
 };
 
 /* functions prototype */
@@ -98,11 +103,18 @@ static void	lookup_table_set_visible    (IBusLookupTable *table,
 					     gboolean flag);
 static gboolean	lookup_table_is_visible	    (IBusLookupTable *table);
 
+static void     key_event_list_set          (GArray* list, const char* str);
+static gboolean key_event_list_match        (GArray* list,
+                                             guint keyval,
+                                             guint modifiers);
+
 static IBusEngineClass *parent_class = NULL;
 static HanjaTable *hanja_table = NULL;
 static HanjaTable *symbol_table = NULL;
 static IBusConfig *config = NULL;
-static GString    *hangul_keyboard;
+static GString    *hangul_keyboard = NULL;
+static GArray     *hanja_keys = NULL;
+static int lookup_table_orientation = 0;
 
 GType
 ibus_hangul_engine_get_type (void)
@@ -149,6 +161,26 @@ ibus_hangul_init (IBusBus *bus)
     if (res) {
         const gchar* str = g_value_get_string (&value);
         g_string_assign (hangul_keyboard, str);
+	g_value_unset(&value);
+    }
+
+    hanja_keys = g_array_sized_new(FALSE, TRUE, sizeof(struct KeyEvent), 4);
+    res = ibus_config_get_value (config, "engine/Hangul",
+                                         "HanjaKeys", &value);
+    if (res) {
+        const gchar* str = g_value_get_string (&value);
+	key_event_list_set(hanja_keys, str);
+	g_value_unset(&value);
+    } else {
+	struct KeyEvent ev;
+
+	ev.keyval = IBUS_Hangul_Hanja;
+	ev.modifiers = 0;
+	g_array_append_val(hanja_keys, ev);
+
+	ev.keyval = IBUS_F9;
+	ev.modifiers = 0;
+	g_array_append_val(hanja_keys, ev);
     }
 }
 
@@ -237,6 +269,7 @@ ibus_hangul_engine_init (IBusHangulEngine *hangul)
     g_object_unref (label);
     g_object_unref (tooltip);
     ibus_prop_list_append (hangul->prop_list, prop);
+    g_object_unref (prop);
 
     hangul->table = ibus_lookup_table_new (9, 0, TRUE, FALSE);
 
@@ -262,14 +295,14 @@ ibus_hangul_engine_constructor (GType                   type,
 static void
 ibus_hangul_engine_destroy (IBusHangulEngine *hangul)
 {
+    if (hangul->prop_hanja_mode) {
+        g_object_unref (hangul->prop_hanja_mode);
+        hangul->prop_hanja_mode = NULL;
+    }
+
     if (hangul->prop_list) {
         g_object_unref (hangul->prop_list);
         hangul->prop_list = NULL;
-    }
-
-    if (hangul->hangul_mode_prop) {
-        g_object_unref (hangul->hangul_mode_prop);
-        hangul->hangul_mode_prop = NULL;
     }
 
     if (hangul->table) {
@@ -502,49 +535,95 @@ ibus_hangul_engine_process_candidate_key_event (IBusHangulEngine    *hangul,
 	    ibus_hangul_engine_hide_lookup_table (hangul);
 	}
 	return TRUE;
-    } else if (keyval == IBUS_Left) {
-        ibus_lookup_table_cursor_up (hangul->table);
-        ibus_hangul_engine_update_lookup_table_ui (hangul);
-	return TRUE;
-    } else if (keyval == IBUS_Right) {
-        ibus_lookup_table_cursor_down (hangul->table);
-        ibus_hangul_engine_update_lookup_table_ui (hangul);
-	return TRUE;
-    } else if (keyval == IBUS_Up) {
-        ibus_lookup_table_page_up (hangul->table);
-        ibus_hangul_engine_update_lookup_table_ui (hangul);
-	return TRUE;
-    } else if (keyval == IBUS_Down) {
-        ibus_lookup_table_page_down (hangul->table);
-        ibus_hangul_engine_update_lookup_table_ui (hangul);
-	return TRUE;
     } else if (keyval == IBUS_Page_Up) {
-        ibus_lookup_table_page_up (hangul->table);
-        ibus_hangul_engine_update_lookup_table_ui (hangul);
+	ibus_lookup_table_page_up (hangul->table);
+	ibus_hangul_engine_update_lookup_table_ui (hangul);
 	return TRUE;
     } else if (keyval == IBUS_Page_Down) {
-        ibus_lookup_table_page_down (hangul->table);
-        ibus_hangul_engine_update_lookup_table_ui (hangul);
+	ibus_lookup_table_page_down (hangul->table);
+	ibus_hangul_engine_update_lookup_table_ui (hangul);
 	return TRUE;
+    } else {
+	if (lookup_table_orientation == 0) {
+	    // horizontal
+	    if (keyval == IBUS_Left) {
+		ibus_lookup_table_cursor_up (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_Right) {
+		ibus_lookup_table_cursor_down (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_Up) {
+		ibus_lookup_table_page_up (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_Down) {
+		ibus_lookup_table_page_down (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    }
+	} else {
+	    // vertical
+	    if (keyval == IBUS_Left) {
+		ibus_lookup_table_page_up (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_Right) {
+		ibus_lookup_table_page_down (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_Up) {
+		ibus_lookup_table_cursor_up (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_Down) {
+		ibus_lookup_table_cursor_down (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    }
+	}
     }
 
     if (!hangul->hanja_mode) {
-	if (keyval == IBUS_h) {
-	    ibus_lookup_table_cursor_up (hangul->table);
-	    ibus_hangul_engine_update_lookup_table_ui (hangul);
-	    return TRUE;
-	} else if (keyval == IBUS_l) {
-	    ibus_lookup_table_cursor_down (hangul->table);
-	    ibus_hangul_engine_update_lookup_table_ui (hangul);
-	    return TRUE;
-	} else if (keyval == IBUS_k) {
-	    ibus_lookup_table_page_up (hangul->table);
-	    ibus_hangul_engine_update_lookup_table_ui (hangul);
-	    return TRUE;
-	} else if (keyval == IBUS_j) {
-	    ibus_lookup_table_page_down (hangul->table);
-	    ibus_hangul_engine_update_lookup_table_ui (hangul);
-	    return TRUE;
+	if (lookup_table_orientation == 0) {
+	    // horizontal
+	    if (keyval == IBUS_h) {
+		ibus_lookup_table_cursor_up (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_l) {
+		ibus_lookup_table_cursor_down (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_k) {
+		ibus_lookup_table_page_up (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_j) {
+		ibus_lookup_table_page_down (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    }
+	} else {
+	    // vertical
+	    if (keyval == IBUS_h) {
+		ibus_lookup_table_page_up (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_l) {
+		ibus_lookup_table_page_down (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_k) {
+		ibus_lookup_table_cursor_up (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    } else if (keyval == IBUS_j) {
+		ibus_lookup_table_cursor_down (hangul->table);
+		ibus_hangul_engine_update_lookup_table_ui (hangul);
+		return TRUE;
+	    }
 	}
     }
 
@@ -573,7 +652,7 @@ ibus_hangul_engine_process_key_event (IBusEngine     *engine,
     if (keyval == IBUS_Shift_L || keyval == IBUS_Shift_R)
         return FALSE;
 
-    if (keyval == IBUS_F9 || keyval == IBUS_Hangul_Hanja) {
+    if (key_event_list_match(hanja_keys, keyval, modifiers)) {
 	if (hangul->hanja_list == NULL) {
 	    ibus_hangul_engine_update_lookup_table (hangul);
 	} else {
@@ -599,6 +678,15 @@ ibus_hangul_engine_process_key_event (IBusEngine     *engine,
     if (keyval == IBUS_BackSpace) {
         retval = hangul_ic_backspace (hangul->context);
     } else {
+	// ignore capslock
+	if (modifiers & IBUS_LOCK_MASK) {
+	    if (keyval >= 'A' && keyval <= 'z') {
+		if (isupper(keyval))
+		    keyval = tolower(keyval);
+		else
+		    keyval = toupper(keyval);
+	    }
+	}
         retval = hangul_ic_process (hangul->context, keyval);
     }
 
@@ -648,17 +736,24 @@ ibus_hangul_engine_flush (IBusHangulEngine *hangul)
     const gunichar *str;
     IBusText *text;
 
+    ibus_hangul_engine_hide_lookup_table (hangul);
+
     str = hangul_ic_flush (hangul->context);
 
-    if (str == NULL || str[0] == 0)
+    ustring_append_ucs4 (hangul->preedit, str, -1);
+
+    if (ustring_length (hangul->preedit) == 0)
         return;
 
+    str = ustring_begin (hangul->preedit);
     text = ibus_text_new_from_ucs4 (str);
 
     ibus_engine_hide_preedit_text ((IBusEngine *) hangul);
     ibus_engine_commit_text ((IBusEngine *) hangul, text);
 
     g_object_unref (text);
+
+    ustring_clear(hangul->preedit);
 }
 
 static void
@@ -791,6 +886,7 @@ ibus_hangul_engine_property_activate (IBusEngine    *engine,
 	}
 
 	ibus_engine_update_property (engine, hangul->prop_hanja_mode);
+	ibus_hangul_engine_flush (hangul);
     }
 }
 
@@ -808,7 +904,14 @@ ibus_config_value_changed (IBusConfig   *config,
             const gchar *str = g_value_get_string (value);
             g_string_assign (hangul_keyboard, str);
             hangul_ic_select_keyboard (hangul->context, hangul_keyboard->str);
-        }
+        } else if (strcmp(name, "HanjaKeys") == 0) {
+	    const gchar* str = g_value_get_string (value);
+	    key_event_list_set(hanja_keys, str);
+	}
+    } else if (strcmp(section, "panel") == 0) {
+        if (strcmp(name, "lookup_table_orientation") == 0) {
+            lookup_table_orientation = g_value_get_int (value);
+	}
     }
 }
 
@@ -823,4 +926,52 @@ lookup_table_is_visible (IBusLookupTable *table)
 {
     gpointer res = g_object_get_data (G_OBJECT(table), "visible");
     return GPOINTER_TO_UINT(res);
+}
+
+static void
+key_event_list_set (GArray* list, const char* str)
+{
+    gchar** items = g_strsplit(str, ",", 0);
+
+    g_array_set_size(list, 0);
+
+    if (items != NULL) {
+	int i;
+	for (i = 0; items[i] != NULL; ++i) {
+	    guint keyval = 0;
+	    guint modifiers = 0;
+	    gboolean res;
+	    res = ibus_key_event_from_string(items[i], &keyval, &modifiers);
+	    if (res) {
+		struct KeyEvent ev = { keyval, modifiers };
+		g_array_append_val(list, ev);
+	    }
+	}
+	g_strfreev(items);
+    }
+}
+
+static gboolean
+key_event_list_match(GArray* list, guint keyval, guint modifiers)
+{
+    guint i;
+    guint mask;
+
+    /* ignore capslock and numlock */
+    mask = IBUS_SHIFT_MASK |
+	   IBUS_CONTROL_MASK |
+	   IBUS_MOD1_MASK |
+	   IBUS_MOD3_MASK |
+	   IBUS_MOD4_MASK |
+	   IBUS_MOD5_MASK;
+
+    modifiers &= mask;
+    for (i = 0; i < list->len; ++i) {
+	struct KeyEvent* ev = &g_array_index(list, struct KeyEvent, i);
+	if (ev->keyval == keyval && ev->modifiers == modifiers) {
+	    return TRUE;
+	}
+    }
+
+    return FALSE;
 }
