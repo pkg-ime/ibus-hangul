@@ -1,3 +1,155 @@
+commit e70eda3684304dafa465458c89ac723d35b05f7d
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2010-01-02 20:23:32 +0900
+
+    Add the source file keycapturedialog.py to the list
+
+M	setup/Makefile.am
+
+commit 5cc77440eaac4b167726eb1cee14f9dd8ef9a13d
+Author: Peng Huang <shawn.p.huang@gmail.com>
+Date:   2009-12-31 14:41:14 +0800
+
+    Use *_LDADD to replace *_LDFLAGS
+
+M	src/Makefile.am
+
+commit 4c26cd91933c1527b95d6cd2b792856edb184379
+Author: Peng Huang <shawn.p.huang@gmail.com>
+Date:   2009-12-15 07:08:39 +0800
+
+    Add --force argument of autopoint
+
+M	autogen.sh
+
+commit b17b6456778cc5a869c88b10a853cde621648ee0
+Author: Peng Huang <shawn.p.huang@gmail.com>
+Date:   2009-12-15 07:08:08 +0800
+
+    Remove unused lines in spec file.
+
+M	ibus-hangul.spec.in
+
+commit 6721c49925a647c7bf4a8b21200a2ae1d87e6df6
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-12-14 23:03:43 +0900
+
+    Ignore unknown modifiers
+    
+     * ignore all modifiers which ibus-hangul don't understand,
+       or modifier compare routine will not work.
+       e.g. When a user change the keyboard layout with Xkb.
+
+M	src/engine.c
+
+commit ad0d794c995439e08eb72874e0efc4267ee17127
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-12-13 23:39:01 +0900
+
+    Remove unused file
+    
+     * Now use setup.ui instead of setup.glade
+
+D	setup/setup.glade
+
+commit 6b04dd1d9ee46413893b9046f691a3f49ebd37b6
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-12-13 23:37:07 +0900
+
+    Update .gitignore (add intltool files)
+
+M	.gitignore
+
+commit 877036598ea68dedbf684e0ab76f50016af847cb
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-12-13 23:36:15 +0900
+
+    Update Setup dialog
+    
+     * Add hanja key configuration ui
+     * Migrate to GtkBuilder: use intltool, change ui filename
+     * Update po files
+     * Issue #689
+       http://code.google.com/p/ibus/issues/detail?id=689
+       https://bugzilla.redhat.com/show_bug.cgi?id=493509
+
+M	autogen.sh
+M	configure.ac
+M	po/POTFILES.in
+M	po/ko.po
+M	po/zh_CN.po
+M	setup/Makefile.am
+A	setup/keycapturedialog.py
+M	setup/main.py
+A	setup/setup.ui
+
+commit 4b0d4c69c8f03c286e41b484f676d34275c85427
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-12-12 00:08:50 +0900
+
+    Update arrow key behavior on lookup table
+    
+     * arrow keys on lookup table behaves differently, according to the
+       lookup table orientation.
+       In the horizontal mode, left and right keys move the cursor,
+       in the vertical mode, left and right keys move the page.
+     * Issue: #688
+       http://code.google.com/p/ibus/issues/detail?id=688
+       https://bugzilla.redhat.com/show_bug.cgi?id=493706
+
+M	src/engine.c
+
+commit 30b5cd853798783ea6b7e9981d7dd8b1bbd03ae8
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-12-12 00:03:03 +0900
+
+    Fix memory leaks
+
+M	src/engine.c
+
+commit 56ce44c9579602a6149e8e6f2f91f4d19f9f8884
+Author: Peng Huang <shawn.p.huang@gmail.com>
+Date:   2009-08-28 13:09:58 +0800
+
+    Fix memory leak.
+
+M	src/engine.c
+
+commit 65dc2d6cec81479d5a726133e41cbbaf42c52d25
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-12-08 00:21:05 +0900
+
+    Ignore capslock state
+    
+     * Korean input method is not transliteration method.
+       The position of the pressed key is important, not the character itself.
+       So we need to normalize the key event to general qwerty to get the
+       correct position of the pressed key.
+
+M	src/engine.c
+
+commit 0a11611fd75a2635394dd549dc0d9a3ad17b36fc
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-11-07 22:50:06 +0900
+
+    Improve Hanja mode
+    
+     * Flush the current preedit string and close lookup window before
+       turning off hanja mode.
+
+M	src/engine.c
+
+commit a82f3e00d122f3ea1506c70f05ffbcba5d699b3b
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2009-11-07 18:19:26 +0900
+
+    Make hanja key configurable
+    
+     * hanja key configuration will be saved in IBus config
+       "engine/Hangul/HanjaKeys".
+
+M	src/engine.c
+
 commit 81f078f9a746c5df59a983128a17d24b0f81867d
 Author: Choe Hwanjin <choe.hwanjin@gmail.com>
 Date:   2009-10-31 17:02:04 +0900
