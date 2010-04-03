@@ -1,3 +1,54 @@
+commit 5490e3f44da7a201eb470c69f41c2795287d3956
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2010-03-29 00:17:39 +0900
+
+    release 1.3.0.20100329
+
+M	configure.ac
+
+commit 41663e90509dc46c3e0324eb03d78008496c6f3e
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2010-03-29 00:10:10 +0900
+
+    Hangul Input Method -> Korean Input Method
+
+M	po/ko.po
+M	po/zh_CN.po
+M	src/hangul.xml.in.in
+M	src/main.c
+
+commit 53607e033002977d350d84fb210b3f7fb372e776
+Author: fujiwarat <takao.fujiwara1@gmail.com>
+Date:   2010-03-16 16:40:09 +0900
+
+    Use ibus_engine_update_preedit_text_with_mode.
+
+M	src/engine.c
+
+commit 6e3ac9505369b63562975a96376998dfeaa1adad
+Author: Peng Huang <shawn.p.huang@gmail.com>
+Date:   2010-02-04 10:33:33 +0800
+
+    Check ibus >= 1.2.99
+
+M	configure.ac
+
+commit 423f2d6b0c3e6fe60d689de9e06aabc7ef2d5194
+Author: Peng Huang <shawn.p.huang@gmail.com>
+Date:   2010-02-01 16:07:19 +0800
+
+    Use GInitiallyUnowned correctly.
+
+M	src/engine.c
+
+commit 7babc789eca46177d03deef52523af52ef8e0501
+Author: Peng Huang <shawn.p.huang@gmail.com>
+Date:   2010-02-01 16:02:20 +0800
+
+    Convert tabs to spaces.
+
+M	src/engine.c
+
 commit e70eda3684304dafa465458c89ac723d35b05f7d
 Author: Choe Hwanjin <choe.hwanjin@gmail.com>
 Date:   2010-01-02 20:23:32 +0900
