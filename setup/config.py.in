@@ -21,3 +21,4 @@
 prefix = "@prefix@"
 datadir = "@prefix@/share"
 localedir = "@prefix@/share/locale"
+setupdir = datadir + "/ibus-hangul/setup"

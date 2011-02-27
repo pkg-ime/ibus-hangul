@@ -1,3 +1,124 @@
+commit e29f8a85374a7a28c47010dd145f5126baa3cfa4
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2011-02-26 23:32:21 +0900
+
+    Add new binary file for setup tool
+
+M	.gitignore
+
+commit 647946170389b8bbb19d273255ffa161109e83b4
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2011-02-26 23:31:12 +0900
+
+    version up to 1.3.1
+
+M	configure.ac
+
+commit 7be89f424aa15a122d400fc4d6ed8f8400c95364
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2011-02-26 21:13:38 +0900
+
+    Do not normalize keyevent on romaja keyboard
+    
+    Romaja hangul keyboard is not transliteration method. So when the hangul
+    keyboard is romaja method, we should use the char from the keyevent without
+    conversion.
+
+M	src/engine.c
+
+commit c1c0442f447f936c791ffbb48fb6c88b0caaf1aa
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2011-02-26 00:17:39 +0900
+
+    Dynamic hangul keyboard listing
+    
+    Using libhangul 0.0.12, ibus-setup-hangul will show hangul keyboard list
+    from libhangul dynamically. So after this, when the libhangul updated,
+    ibus-setup-hangul will show newly added hangul keyboard automatically.
+
+M	configure.ac
+M	setup/Makefile.am
+M	setup/config.py.in
+A	setup/hangul_keyboard_list.c
+M	setup/main.py
+
+commit 734bc6346616f11518097fec70e8a37cdbfc33a6
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2010-12-29 19:49:14 +0900
+
+    Normalize keyval for position before use
+    
+    Korean input method depends on the key position on the keyboard, not the key
+    value. So we need to change the keyval to some generic value which can
+    represent the position on the keyboard. I choose the US qwerty layout as the
+    generic value. Before passing the keyval to libhangul, we change the keyval
+    as if the keyboard is US qwerty keyboard. Then, libhangul can handle the
+    keyval as the right position.
+    This will fix the problem with non-qwerty keyboard users.
+
+M	src/engine.c
+
+commit bae59520180df45c6747a440d614ca07bf1e190a
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2010-08-22 21:15:22 +0900
+
+    Remove debug code
+
+M	src/engine.c
+
+commit 8d3841b2734ac3878843dcc14870fa34e0811a95
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2010-08-22 20:57:29 +0900
+
+    Ignore modifier keys only when they are in hanja key list
+    
+    Bug #1036: http://code.google.com/p/ibus/issues/detail?id=1036
+    If any hanja key has any modifier key, we should ignore that
+    modifire key, or we cannot make that work.
+    
+    Let the hanja key 'control + h'.
+    User may press control, and slightly after press h.
+    So if we commit preedit string on control key, user will have
+    no preedit string when he/she press 'h'.
+    
+    But some case hangul engine need to commit on modifier keys to prevent
+    client's malfunction which is caused by misimplementation.
+
+M	src/engine.c
+
+commit 27a82c5753b28624631ea01b873fcf57805d71d0
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2010-07-12 00:46:22 +0900
+
+    Clear preedit text on ibus_hangul_engine_reset()
+
+M	src/engine.c
+
+commit be97b93e0189be50928d3739b87e6c698840cc13
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2010-07-08 22:44:15 +0900
+
+    Update lookup table managing code
+    
+     After 53607e033002977d350d84fb210b3f7fb372e776, there is a problem with
+     lookup table manaing. Even when the lookup table is showing, focus out
+     event cause committing preedit text. But in that case, the preedit string
+     should not be committed. And the focus is in again, the last lookup table
+     should be shown. So I've change the code to conform to this behavior.
+
+M	src/engine.c
+
+commit 8135d88b75bce61f54d0049e62916420200b38d6
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2010-05-24 22:40:03 +0900
+
+    Add a new feature
+    
+      commit the candidate when it clicked by the user.
+      issue #921
+
+M	src/engine.c
+
 commit 5490e3f44da7a201eb470c69f41c2795287d3956
 Author: Choe Hwanjin <choe.hwanjin@gmail.com>
 Date:   2010-03-29 00:17:39 +0900

@@ -30,6 +30,13 @@ setup_hanguldir = $(datadir)/ibus-hangul/setup
 
 libexec_SCRIPTS = ibus-setup-hangul
 
+setup_hangul_PROGRAMS = hangul_keyboard_list
+
+hangul_keyboard_list_SOURCES = hangul_keyboard_list.c
+hangul_keyboard_list_CFLAGS = $(HANGUL_CFLAGS)
+hangul_keyboard_list_LDADD = $(HANGUL_LIBS)
+
+
 CLEANFILES = \
 	*.pyc \
 	$(NULL)
