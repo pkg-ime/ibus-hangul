@@ -26,6 +26,7 @@ import ibus
 import locale
 import gettext
 import config
+import subprocess
 from keycapturedialog import KeyCaptureDialog
 
 _ = lambda a : gettext.dgettext("ibus-hangul", a)
@@ -45,14 +46,17 @@ class Setup ():
 	self.__builder.add_from_file(ui_file)
 
 	# Hangul tab
+	pipe = subprocess.Popen([config.setupdir + '/hangul_keyboard_list'], stdout = subprocess.PIPE)
+	list = pipe.communicate()[0].split('\n')
+	
 	self.__hangul_keyboard = self.__builder.get_object("HangulKeyboard")
 	model = gtk.ListStore(str, str, int)
-	model.append([_("Dubeolsik"), "2", 0])
-	model.append([_("Sebeolsik Final"), "3f", 1])
-	model.append([_("Sebeolsik 390"), "39", 2])
-	model.append([_("Sebeolsik No-shift"), "3s", 3])
-	model.append([_("Sebeolsik 2 set"), "32", 4])
-	model.append([_("Romaja"), "ro", 5])
+	i = 0
+	for line in list:
+	    items = line.split('\t')
+	    if len(items) > 1:
+		model.append([items[1], items[0], i])
+		i+=1
 
 	self.__hangul_keyboard.set_model(model)
 	renderer = gtk.CellRendererText()
