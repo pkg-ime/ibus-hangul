@@ -29,6 +29,7 @@ install: build
 	dh_prep
 	dh_installdirs
 	$(MAKE) DESTDIR=$(CURDIR)/debian/ibus-hangul install
+	mv $(CURDIR)/debian/ibus-hangul/usr/share/ibus-hangul/setup/hangul_keyboard_list $(CURDIR)/debian/ibus-hangul/usr/lib/ibus-hangul/
 
 binary-indep: install
 
