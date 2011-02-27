@@ -20,7 +20,7 @@ clean:
 	dh_testroot
 	rm -f build-stamp
 	[ ! -f Makefile ] || $(MAKE) distclean
-	rm -f config.sub config.guess
+	rm -f config.sub config.guess config.log
 	dh_clean
 
 install: build
