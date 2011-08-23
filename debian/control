@@ -1,22 +1,22 @@
 Source: ibus-hangul
 Section: utils
 Priority: optional
-Maintainer: IME Packaging Team <pkg-ime-devel@lists.alioth.debian.org>
+Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+XSBC-Original-Maintainer: IME Packaging Team <pkg-ime-devel@lists.alioth.debian.org>
 Uploaders: 
  LI Daobing <lidaobing@debian.org>
 Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev (>= 0.0.12),
- python-support, swig, python-dev (>= 2.5), pkg-config, libibus-dev (>= 1.2.99),
+ swig, python-dev (>= 2.6.6-3~), pkg-config, libibus-1.0-dev (>= 1.2.99),
  intltool
 Standards-Version: 3.9.1
 Homepage: http://code.google.com/p/ibus
-XS-Python-Version: >= 2.5
+X-Python-Version: >= 2.5
 Vcs-Bzr: lp:~pkg-ime/ibus/debian-ibus-hangul
 Vcs-Browser: https://code.launchpad.net/~pkg-ime/ibus/debian-ibus-hangul
 
 Package: ibus-hangul
 Architecture: any
 Depends: ${python:Depends}, ${shlibs:Depends}, ${misc:Depends}, ibus (>= 1.2.99)
-XB-Python-Version: ${python:Versions}
 Description: Hangul engine for IBus
  IBus is an Intelligent Input Bus. It is a new input framework for Linux
  OS. It provides full featured and user friendly input method user interface.

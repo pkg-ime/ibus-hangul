@@ -39,7 +39,7 @@ binary-arch: install
 	dh_installchangelogs -s
 	dh_installdocs -s README AUTHORS
 	dh_installexamples -s
-	dh_pysupport -s
+	dh_python2 -s
 	dh_installman -s
 	dh_link -s
 	dh_strip -s
