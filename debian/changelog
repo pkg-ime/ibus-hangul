@@ -1,3 +1,10 @@
+ibus-hangul (1.3.1-3) unstable; urgency=low
+
+  * merge patches from ubuntu. (closes: #640712, #637385)
+  * debian/rules: updated.
+
+ -- LI Daobing <lidaobing@debian.org>  Sat, 01 Oct 2011 21:23:47 +0800
+
 ibus-hangul (1.3.1-2ubuntu2) oneiric; urgency=low
 
   * Build-depend on libibus-1.0-dev rather than libibus-dev.
