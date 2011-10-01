@@ -5,7 +5,7 @@ Maintainer: IME Packaging Team <pkg-ime-devel@lists.alioth.debian.org>
 Uploaders: 
  LI Daobing <lidaobing@debian.org>
 Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev (>= 0.0.12),
- python-support, swig, python-dev (>= 2.5), pkg-config, libibus-dev (>= 1.2.99),
+ python-support, swig, python-dev (>= 2.5), pkg-config, libibus-1.0-dev,
  intltool
 Standards-Version: 3.9.1
 Homepage: http://code.google.com/p/ibus
