@@ -7,7 +7,10 @@ config.status: configure
 	dh_auto_configure
 
 
-build: build-stamp
+build: build-arch
+
+build-arch: build-stamp
+build-indep:
 
 build-stamp: config.status
 	dh_testdir
