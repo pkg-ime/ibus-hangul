@@ -1,8 +1,7 @@
 Source: ibus-hangul
 Section: utils
 Priority: optional
-Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
-XSBC-Original-Maintainer: IME Packaging Team <pkg-ime-devel@lists.alioth.debian.org>
+Maintainer: IME Packaging Team <pkg-ime-devel@lists.alioth.debian.org>
 Uploaders: 
  LI Daobing <lidaobing@debian.org>
 Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev (>= 0.0.12),
@@ -11,8 +10,8 @@ Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev (>= 0.0.12),
 Standards-Version: 3.9.2
 Homepage: http://code.google.com/p/ibus
 X-Python-Version: >= 2.5
-Vcs-Bzr: lp:~pkg-ime/ibus/debian-ibus-hangul
-Vcs-Browser: https://code.launchpad.net/~pkg-ime/ibus/debian-ibus-hangul
+Vcs-Git: git://anonscm.debian.org/pkg-ime/ibus-hangul.git
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-ime/ibus-hangul.git
 
 Package: ibus-hangul
 Architecture: any
