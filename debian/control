@@ -8,7 +8,7 @@ Uploaders:
 Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev (>= 0.0.12),
  swig, python-dev (>= 2.6.6-3~), pkg-config, libibus-1.0-dev (>= 1.2.99),
  intltool
-Standards-Version: 3.9.1
+Standards-Version: 3.9.2
 Homepage: http://code.google.com/p/ibus
 X-Python-Version: >= 2.5
 Vcs-Bzr: lp:~pkg-ime/ibus/debian-ibus-hangul
