@@ -2,21 +2,21 @@
 #
 # ibus-hangul - The Hangul Engine For IBus
 #
-# Copyright (c) 2009 Choe Hwanjin <choe.hwanjin@gmail.com>
+# Copyright (c) 2009-2011 Choe Hwanjin <choe.hwanjin@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 import sys
 import os
@@ -29,24 +29,21 @@ import config
 import subprocess
 from keycapturedialog import KeyCaptureDialog
 
-_ = lambda a : gettext.dgettext("ibus-hangul", a)
+_ = lambda a : gettext.dgettext(config.gettext_package, a)
 
 class Setup ():
     def __init__ (self):
-	locale.bindtextdomain("ibus-hangul", config.localedir)
-	locale.bind_textdomain_codeset("ibus-hangul", "UTF-8")
-
         self.__bus = ibus.Bus()
         self.__config = self.__bus.get_config()
 	self.__config.connect("value-changed", self.on_value_changed, None)
 
 	ui_file = os.path.join(os.path.dirname(__file__), "setup.ui")
 	self.__builder = gtk.Builder()
-	self.__builder.set_translation_domain("ibus-hangul")
+	self.__builder.set_translation_domain(config.gettext_package)
 	self.__builder.add_from_file(ui_file)
 
 	# Hangul tab
-	pipe = subprocess.Popen([config.setupdir + '/hangul_keyboard_list'], stdout = subprocess.PIPE)
+	pipe = subprocess.Popen([config.setuplibdir + '/hangul_keyboard_list'], stdout = subprocess.PIPE)
 	list = pipe.communicate()[0].split('\n')
 	
 	self.__hangul_keyboard = self.__builder.get_object("HangulKeyboard")
@@ -100,7 +97,7 @@ class Setup ():
 
 	# setup dialog
 	self.__window = self.__builder.get_object("SetupDialog")
-	icon_file = os.path.join(config.datadir, "ibus-hangul", "icons", "ibus-hangul.svg")
+	icon_file = os.path.join(config.pkgdatadir, "icons", "ibus-hangul.svg")
 	self.__window.set_icon_from_file(icon_file)
 	self.__window.connect("response", self.on_response, None)
 	self.__window.show()
@@ -183,5 +180,7 @@ class Setup ():
         return self.__config.set_value("engine/Hangul", name, v)
 
 if __name__ == "__main__":
-    gettext.bindtextdomain("ibus-hangul", config.localedir)
+    locale.bindtextdomain(config.gettext_package, config.localedir)
+    locale.bind_textdomain_codeset(config.gettext_package, "UTF-8")
+
     Setup().run()

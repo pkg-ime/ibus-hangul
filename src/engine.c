@@ -1,4 +1,23 @@
 /* vim:set et sts=4: */
+/* ibus-hangul - The Hangul Engine For IBus
+ * Copyright (C) 2008-2009 Peng Huang <shawn.p.huang@gmail.com>
+ * Copyright (C) 2009-2011 Choe Hwanjin <choe.hwanjin@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -727,13 +746,13 @@ ibus_hangul_engine_process_key_event (IBusEngine     *engine,
         }
     }
 
-    // if we've got a key event with modifiers, commit current
+    // If we've got a key event with some modifiers, commit current
     // preedit string and ignore this key event.
     // So, if you want to add some key event handler, put it 
     // before this code.
-    // Omit shift, capslock, numlock and xkb modifiers.
-    mask = IBUS_MODIFIER_MASK &
-	   ~(IBUS_SHIFT_MASK | IBUS_LOCK_MASK | IBUS_MOD2_MASK);
+    // Ignore key event with control, alt, super or mod5
+    mask = IBUS_CONTROL_MASK |
+	    IBUS_MOD1_MASK | IBUS_MOD3_MASK | IBUS_MOD4_MASK | IBUS_MOD5_MASK;
     if (modifiers & mask) {
         ibus_hangul_engine_flush (hangul);
         return FALSE;
@@ -747,7 +766,11 @@ ibus_hangul_engine_process_key_event (IBusEngine     *engine,
 	// each key, not the character. We make the keyval from keycode
 	// as if the keyboard is US qwerty layout. Then we can assume the
 	// keyval represent the position of the each key.
-	if (strcmp(hangul_keyboard->str, "ro") != 0) {
+	// But if the hic is in transliteration mode, then we should not
+	// normalize the keyval.
+	bool is_transliteration_mode =
+		 hangul_ic_is_transliteration(hangul->context);
+	if (!is_transliteration_mode) {
 	    if (keymap != NULL)
 		keyval = ibus_keymap_lookup_keysym(keymap, keycode, modifiers);
 	}
