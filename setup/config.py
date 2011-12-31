@@ -18,9 +18,9 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-gettext_package = '@SETUP_GETTEXT_PACKAGE@'
-localedir = '@SETUP_LOCALEDIR@'
-pkgdatadir = '@SETUP_PKGDATADIR@'
-pkglibdir = '@SETUP_PKGLIBDIR@'
+gettext_package = 'ibus-hangul'
+localedir = '/home/krisna/share/locale'
+pkgdatadir = '/home/krisna/share/ibus-hangul'
+pkglibdir = '/home/krisna/lib/ibus-hangul'
 setupdatadir = pkgdatadir + '/setup'
 setuplibdir = pkglibdir + '/setup'

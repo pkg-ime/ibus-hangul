@@ -23,17 +23,17 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 2, or (at your option)
-# any later version.
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
 VPATH = @srcdir@
@@ -55,11 +55,10 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-setup_hangul_PROGRAMS = hangul_keyboard_list$(EXEEXT)
+setuplib_PROGRAMS = hangul_keyboard_list$(EXEEXT)
 subdir = setup
 DIST_COMMON = $(setup_hangul_PYTHON) $(srcdir)/Makefile.am \
-	$(srcdir)/Makefile.in $(srcdir)/config.py.in \
-	$(srcdir)/ibus-setup-hangul.in
+	$(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/as-version.m4 \
 	$(top_srcdir)/m4/gettext.m4 $(top_srcdir)/m4/iconv.m4 \
@@ -74,12 +73,11 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES = ibus-setup-hangul config.py
+CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(setup_hanguldir)" \
-	"$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(setup_hanguldir)" \
-	"$(DESTDIR)$(setup_hanguldir)"
-PROGRAMS = $(setup_hangul_PROGRAMS)
+am__installdirs = "$(DESTDIR)$(setuplibdir)" "$(DESTDIR)$(libexecdir)" \
+	"$(DESTDIR)$(setup_hanguldir)" "$(DESTDIR)$(setup_hanguldir)"
+PROGRAMS = $(setuplib_PROGRAMS)
 am_hangul_keyboard_list_OBJECTS =  \
 	hangul_keyboard_list-hangul_keyboard_list.$(OBJEXT)
 hangul_keyboard_list_OBJECTS = $(am_hangul_keyboard_list_OBJECTS)
@@ -218,6 +216,8 @@ PACKAGE_VERSION_NANO = @PACKAGE_VERSION_NANO@
 PACKAGE_VERSION_RELEASE = @PACKAGE_VERSION_RELEASE@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
+PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
+PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
 POSUB = @POSUB@
 PYTHON = @PYTHON@
 PYTHON_EXEC_PREFIX = @PYTHON_EXEC_PREFIX@
@@ -292,22 +292,27 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 setup_hangul_PYTHON = \
+	config.py \
 	main.py \
 	keycapturedialog.py \
 	setup.ui \
 	$(NULL)
 
 nodist_setup_hangul_PYTHON = config.py
-setup_hanguldir = $(datadir)/ibus-hangul/setup
+setup_hanguldir = $(pkgdatadir)/setup
 libexec_SCRIPTS = ibus-setup-hangul
+setuplibdir = $(pkglibdir)/setup
 hangul_keyboard_list_SOURCES = hangul_keyboard_list.c
 hangul_keyboard_list_CFLAGS = $(HANGUL_CFLAGS)
 hangul_keyboard_list_LDADD = $(HANGUL_LIBS)
 CLEANFILES = \
+	ibus-setup-hangul \
+	config.py \
 	*.pyc \
 	$(NULL)
 
 EXTRA_DIST = \
+	config.py.in \
 	ibus-setup-hangul.in \
 	$(NULL)
 
@@ -345,14 +350,10 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-ibus-setup-hangul: $(top_builddir)/config.status $(srcdir)/ibus-setup-hangul.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-config.py: $(top_builddir)/config.status $(srcdir)/config.py.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-install-setup_hangulPROGRAMS: $(setup_hangul_PROGRAMS)
+install-setuplibPROGRAMS: $(setuplib_PROGRAMS)
 	@$(NORMAL_INSTALL)
-	test -z "$(setup_hanguldir)" || $(MKDIR_P) "$(DESTDIR)$(setup_hanguldir)"
-	@list='$(setup_hangul_PROGRAMS)'; test -n "$(setup_hanguldir)" || list=; \
+	test -z "$(setuplibdir)" || $(MKDIR_P) "$(DESTDIR)$(setuplibdir)"
+	@list='$(setuplib_PROGRAMS)'; test -n "$(setuplibdir)" || list=; \
 	for p in $$list; do echo "$$p $$p"; done | \
 	sed 's/$(EXEEXT)$$//' | \
 	while read p p1; do if test -f $$p || test -f $$p1; \
@@ -369,23 +370,23 @@ install-setup_hangulPROGRAMS: $(setup_hangul_PROGRAMS)
 	while read type dir files; do \
 	    if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	    test -z "$$files" || { \
-	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(setup_hanguldir)$$dir'"; \
-	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(setup_hanguldir)$$dir" || exit $$?; \
+	    echo " $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files '$(DESTDIR)$(setuplibdir)$$dir'"; \
+	    $(INSTALL_PROGRAM_ENV) $(LIBTOOL) $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) --mode=install $(INSTALL_PROGRAM) $$files "$(DESTDIR)$(setuplibdir)$$dir" || exit $$?; \
 	    } \
 	; done
 
-uninstall-setup_hangulPROGRAMS:
+uninstall-setuplibPROGRAMS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(setup_hangul_PROGRAMS)'; test -n "$(setup_hanguldir)" || list=; \
+	@list='$(setuplib_PROGRAMS)'; test -n "$(setuplibdir)" || list=; \
 	files=`for p in $$list; do echo "$$p"; done | \
 	  sed -e 'h;s,^.*/,,;s/$(EXEEXT)$$//;$(transform)' \
 	      -e 's/$$/$(EXEEXT)/' `; \
 	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(setup_hanguldir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(setup_hanguldir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(setuplibdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(setuplibdir)" && rm -f $$files
 
-clean-setup_hangulPROGRAMS:
-	@list='$(setup_hangul_PROGRAMS)'; test -n "$$list" || exit 0; \
+clean-setuplibPROGRAMS:
+	@list='$(setuplib_PROGRAMS)'; test -n "$$list" || exit 0; \
 	echo " rm -f" $$list; \
 	rm -f $$list || exit $$?; \
 	test -n "$(EXEEXT)" || exit 0; \
@@ -641,7 +642,7 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(SCRIPTS)
 installdirs:
-	for dir in "$(DESTDIR)$(setup_hanguldir)" "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(setup_hanguldir)" "$(DESTDIR)$(setup_hanguldir)"; do \
+	for dir in "$(DESTDIR)$(setuplibdir)" "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(setup_hanguldir)" "$(DESTDIR)$(setup_hanguldir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -672,7 +673,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-setup_hangulPROGRAMS \
+clean-am: clean-generic clean-libtool clean-setuplibPROGRAMS \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -694,7 +695,7 @@ info: info-am
 info-am:
 
 install-data-am: install-nodist_setup_hangulPYTHON \
-	install-setup_hangulPROGRAMS install-setup_hangulPYTHON
+	install-setup_hangulPYTHON install-setuplibPROGRAMS
 
 install-dvi: install-dvi-am
 
@@ -742,12 +743,12 @@ ps-am:
 
 uninstall-am: uninstall-libexecSCRIPTS \
 	uninstall-nodist_setup_hangulPYTHON \
-	uninstall-setup_hangulPROGRAMS uninstall-setup_hangulPYTHON
+	uninstall-setup_hangulPYTHON uninstall-setuplibPROGRAMS
 
 .MAKE: install-am install-strip
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-setup_hangulPROGRAMS ctags distclean \
+	clean-libtool clean-setuplibPROGRAMS ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-dvi \
@@ -755,20 +756,29 @@ uninstall-am: uninstall-libexecSCRIPTS \
 	install-html-am install-info install-info-am \
 	install-libexecSCRIPTS install-man \
 	install-nodist_setup_hangulPYTHON install-pdf install-pdf-am \
-	install-ps install-ps-am install-setup_hangulPROGRAMS \
-	install-setup_hangulPYTHON install-strip installcheck \
+	install-ps install-ps-am install-setup_hangulPYTHON \
+	install-setuplibPROGRAMS install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
 	tags uninstall uninstall-am uninstall-libexecSCRIPTS \
 	uninstall-nodist_setup_hangulPYTHON \
-	uninstall-setup_hangulPROGRAMS uninstall-setup_hangulPYTHON
+	uninstall-setup_hangulPYTHON uninstall-setuplibPROGRAMS
 
 
 test:
 	$(ENV) DBUS_DEBUG=true \
 	       PYTHONPATH=$(abs_top_srcdir):$(pyexecdir) \
 	       $(PYTHON) $(srcdir)/main.py
+
+config.py: config.py.in Makefile
+	sed -e 's&@SETUP_GETTEXT_PACKAGE@&$(GETTEXT_PACKAGE)&g' \
+	    -e 's&@SETUP_LOCALEDIR@&$(localedir)&g' \
+	    -e 's&@SETUP_PKGDATADIR@&$(pkgdatadir)&g' \
+	    -e 's&@SETUP_PKGLIBDIR@&$(pkglibdir)&g' $< > $@
+
+ibus-setup-hangul: ibus-setup-hangul.in config.py Makefile
+	sed -e 's&@SETUP_PKGDATADIR@&$(pkgdatadir)&g' $< > $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
