@@ -1,58 +1,11 @@
 #!/usr/bin/make -f
+#export DH_VERBOSE=1
 
-config.status: configure
-	dh_testdir
-	cp -f /usr/share/misc/config.sub config.sub
-	cp -f /usr/share/misc/config.guess config.guess
-	dh_auto_configure
+%:
+	dh $@ --with quilt --with autoreconf
 
+.PHONY: override_dh_autoreconf
 
-build: build-arch
-
-build-arch: build-stamp
-build-indep:
-
-build-stamp: config.status
-	dh_testdir
-	$(MAKE)
-	cd po; intltool-update --pot
-	touch $@
-
-clean:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp
-	[ ! -f Makefile ] || $(MAKE) distclean
-	rm -f config.sub config.guess config.log
-	dh_clean
-
-install: build
-	dh_testdir
-	dh_testroot
-	dh_prep
-	dh_installdirs
-	$(MAKE) DESTDIR=$(CURDIR)/debian/ibus-hangul install
-	mv $(CURDIR)/debian/ibus-hangul/usr/share/ibus-hangul/setup/hangul_keyboard_list $(CURDIR)/debian/ibus-hangul/usr/lib/ibus-hangul/
-
-binary-indep: install
-
-binary-arch: install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs -s
-	dh_installdocs -s README AUTHORS
-	dh_installexamples -s
-	dh_python2 -a
-	dh_installman -s
-	dh_link -s
-	dh_strip -s
-	dh_compress -s
-	dh_fixperms -s
-	dh_installdeb -s
-	dh_shlibdeps -s
-	dh_gencontrol -s
-	dh_md5sums -s
-	dh_builddeb -s
-
-binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary install
+override_dh_autoreconf:
+	dh_autoreconf
+	intltoolize --automake --force --copy

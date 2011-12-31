@@ -5,14 +5,23 @@ Maintainer: IME Packaging Team <pkg-ime-devel@lists.alioth.debian.org>
 Uploaders: 
  Changwoo Ryu <cwryu@debian.org>,
  LI Daobing <lidaobing@debian.org>
-Build-Depends: debhelper (>= 7), autotools-dev, libhangul-dev (>= 0.0.12),
- swig, python-dev (>= 2.6.6-3~), pkg-config, libibus-1.0-dev (>= 1.2.99),
- intltool
 Standards-Version: 3.9.2
 Homepage: http://code.google.com/p/ibus
 X-Python-Version: >= 2.5
 Vcs-Git: git://anonscm.debian.org/pkg-ime/ibus-hangul.git
 Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-ime/ibus-hangul.git
+Build-Depends:
+ autopoint,
+ autotools-dev,
+ debhelper (>= 7.0.50),
+ dh-autoreconf,
+ intltool,         
+ libhangul-dev (>= 0.0.12),
+ libibus-1.0-dev (>= 1.2.99),
+ pkg-config,
+ python-dev (>= 2.6.6-3~),
+ quilt (>= 0.46-7~),
+ swig,
 
 Package: ibus-hangul
 Architecture: any
