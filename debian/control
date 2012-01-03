@@ -16,7 +16,7 @@ Build-Depends:
  debhelper (>= 7.0.50),
  dh-autoreconf,
  intltool,         
- libhangul-dev (>= 0.0.12),
+ libhangul-dev (>= 0.1.0),
  libibus-1.0-dev (>= 1.2.99),
  pkg-config,
  python-dev (>= 2.6.6-3~),

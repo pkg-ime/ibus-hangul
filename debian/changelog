@@ -3,6 +3,8 @@ ibus-hangul (1.3.2-1) UNRELEASED; urgency=low
   [ Changwoo Ryu ]
   * debian/ibus-hangul.links:
     - Remove a danling symlink
+  * debian/control:
+    - Build-Depends on the more recent libhangul (>= 0.1.0)
 
  -- Changwoo Ryu <cwryu@debian.org>  Tue, 03 Jan 2012 10:59:21 +0900
 
