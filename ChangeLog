@@ -1,3 +1,164 @@
+commit 1585e0d578f668a9a75d1171c707be3a2d46bc02
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2012-01-10 23:25:57 +0900
+
+    Update documents
+
+M	NEWS
+M	README
+
+commit 830b5a37f61f92ad8463f8a2bc6ac83e8d91cbb2
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2012-01-10 23:24:53 +0900
+
+    Update po files
+
+M	po/ko.po
+M	po/zh_CN.po
+
+commit 97111639f229ddf405589af7f2eac2be9ff20766
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2012-01-09 23:22:29 +0900
+
+    Add "Automatic reordering" option
+
+M	setup/main.py
+M	setup/setup.ui
+M	src/engine.c
+
+commit f88ff98d056f744d4e2afad873fce9c4bb123eee
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2012-01-08 22:25:20 +0900
+
+    Add 'Commit in word unit' option to setup dialog
+    
+    'Commit in word unit' option is off by default.
+
+M	setup/main.py
+M	setup/setup.ui
+M	src/engine.c
+
+commit 54efb9e2b814919c92003619db744781d4fd0eca
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2012-01-08 21:24:25 +0900
+
+    Update lookup table on backspace key in hanja mode
+    
+    In hanja mode, lookup table should be hiden when the preedit text is
+    empty. Or lookup table will never be closed on backspace, because
+    ibus-hangul tries to look up hanja with surrounding text.
+
+M	src/engine.c
+
+commit 040f1903cee4d80068ec7f355ff813974a9dd701
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2012-01-08 20:41:06 +0900
+
+    Update candidate commit routine
+    
+    ibus-hangul should remove preedit string according to the last
+    lookup method. If the lookup method is prefix method, preedit text
+    should be removed from the begin.
+
+M	src/engine.c
+
+commit fb2dbcaf8f435e3db4fe81dc52b0e65fbf468fcc
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2012-01-08 17:09:18 +0900
+
+    Implement 'commit in a word unit' mode
+
+M	src/engine.c
+
+commit 698260ac8d8fe2420ac92ca517d521c2db5b11cf
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2012-01-08 16:55:40 +0900
+
+    Clear preedit text before commit text
+    
+    Some buggy input method clients do wrong when they have preedit
+    text on commit event.
+    So, now ibus-hangul clears preedit text first, and then commits text.
+
+M	src/engine.c
+
+commit 2ada67d028e808e1789befa1504461cf8f0b000d
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2012-01-07 23:28:34 +0900
+
+    Update MS IME compatible symbol table
+    
+    Some wrong part of symbol table has been fixed.
+    Thanks to Jeong YunWon:
+    http://github.com/youknowone/libhangul/commit/ee69d48885437c68731374d32352a5f3a011809f
+
+M	data/symbol.txt
+
+commit 28d85c9309131a5981f65fe2d911b622d2f2de9b
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2012-01-05 23:49:56 +0900
+
+    Add text conversion feature using surrounding text
+    
+    This patch implements text conversion feature.
+    With surrounding text, ibus-hangul can convert text that is
+    already commited or pasted to hanja string.
+
+M	src/engine.c
+
+commit 8d3735e4f303ed57141257b6934a560ebcedeec6
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2011-12-31 18:33:47 +0900
+
+    Add desktop menu for ibus-setup-hangul
+    
+    The install location of ibus-setup-hangul has changed to ${bindir}.
+    And the desktop file for ibus-setup-hangul is also installed in
+    ${datadir}/applications.
+    Now it's easer to launch ibus-setup-hangul without palette or systray
+    icon. In ubuntu, unity does not allow the systray application to handle
+    mouse left button press event. So ibus does not show ibus engine
+    specific context menu. This makes users hard to change ibus-hangul's
+    configration.
+
+M	po/POTFILES.in
+M	setup/Makefile.am
+A	setup/ibus-setup-hangul.desktop.in
+A	setup/ibus-setup-hangul.png
+A	setup/ibus-setup-hangul.svg
+M	src/engine.c
+
+commit d774a830e6afe6b554b0cdb31ce04df902b9cf54
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2011-12-30 23:13:36 +0900
+
+    use ibus_property_set_state()
+    
+    Direct access to the member of IBusProperty should be avoided
+    beacuse implementation details of IBusProperty may change.
+
+M	src/engine.c
+
+commit 5ea6a4320e8f2dfa777aa03e1730c2903b17aac2
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2011-10-17 15:06:36 +0900
+
+    port to ibus 1.4
+    
+    IBusConfig uses changed API for "value-changed" signal also.
+    So the callback function ibus_config_value_changed() should be
+    modified to conform to new API.
+    ibus_config_value_changed function uses GVariant instead of GValue.
+
+M	src/engine.c
+
+commit 0026a6c5646937ba2056a183a4a339cdbb3c779a
+Merge: 50bc72d 158f7b6
+Author: Choe Hwanjin <choe.hwanjin@gmail.com>
+Date:   2011-10-17 14:48:49 +0900
+
+    Merge branch 'master' of git://github.com/lidaobing/ibus-hangul
+
 commit 50bc72dd621fb8abfcfbb7e92049c18c1353a71e
 Author: Choe Hwanjin <choe.hwanjin@gmail.com>
 Date:   2011-10-17 13:35:04 +0900
@@ -16,6 +177,17 @@ Date:   2011-10-17 11:28:45 +0900
     mode. The information about the input method logic should be retrieved
     from libhangul hic.
     So we use new API from libhangul 0.1.0.
+
+M	configure.ac
+M	src/engine.c
+
+commit 158f7b62afb1e7447225d0ce1e8d30dc2f6992b9
+Author: LI Daobing <lidaobing@gmail.com>
+Date:   2011-10-01 20:41:09 +0800
+
+    port to ibus 1.4
+    
+    fix #1317: http://code.google.com/p/ibus/issues/detail?id=1317
 
 M	configure.ac
 M	src/engine.c

@@ -29,7 +29,7 @@ nodist_setup_hangul_PYTHON = config.py
 
 setup_hanguldir = $(pkgdatadir)/setup
 
-libexec_SCRIPTS = ibus-setup-hangul
+bin_SCRIPTS = ibus-setup-hangul
 
 setuplibdir = $(pkglibdir)/setup
 setuplib_PROGRAMS = hangul_keyboard_list
@@ -38,16 +38,22 @@ hangul_keyboard_list_SOURCES = hangul_keyboard_list.c
 hangul_keyboard_list_CFLAGS = $(HANGUL_CFLAGS)
 hangul_keyboard_list_LDADD = $(HANGUL_LIBS)
 
+desktop_in_files = ibus-setup-hangul.desktop.in
+desktop_DATA = ibus-setup-hangul.desktop
+desktopdir = $(datadir)/applications
+@INTLTOOL_DESKTOP_RULE@
 
 CLEANFILES = \
 	ibus-setup-hangul \
 	config.py \
 	*.pyc \
+	ibus-setup-hangul.desktop \
 	$(NULL)
 
 EXTRA_DIST = \
 	config.py.in \
 	ibus-setup-hangul.in \
+	ibus-setup-hangul.desktop.in \
 	$(NULL)
 
 test:
