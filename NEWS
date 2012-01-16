@@ -1,0 +1,7 @@
+1.4.0
+ * Require ibus 1.4
+ * Add desktop menu for ibus-setup-hangul
+ * Add an option for automatic reordering
+ * Add an option for a word preedit text
+ * Update MS IME compatible symbol table
+ * Use surrounding text feature on converting to hanja

@@ -7,10 +7,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ibus-hangul\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-29 00:05+0900\n"
+"POT-Creation-Date: 2012-01-10 23:24+0900\n"
 "PO-Revision-Date: 2009-02-18 23:32+0900\n"
 "Last-Translator: Choe Hwanjin <choe.hwanjin@gmail.com>\n"
 "Language-Team: korean <ko@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -26,84 +27,96 @@ msgstr ""
 "그 키를 사용하시려면 \"확인\"을 누르시고, 사용하지 않으시려면 \"취소\"를누르"
 "십시오."
 
-#: ../setup/main.py:50
-msgid "Dubeolsik"
-msgstr "두벌식"
-
-#: ../setup/main.py:51
-msgid "Sebeolsik Final"
-msgstr "세벌식 최종"
-
-#: ../setup/main.py:52
-msgid "Sebeolsik 390"
-msgstr "세벌식 390"
-
-#: ../setup/main.py:53
-msgid "Sebeolsik No-shift"
-msgstr "세벌식 순아래"
-
-#: ../setup/main.py:54
-msgid "Sebeolsik 2 set"
-msgstr "세벌식 두벌배열"
-
-#: ../setup/main.py:55
-msgid "Romaja"
-msgstr "로마자"
-
-#: ../setup/main.py:141
+#: ../setup/main.py:153
 msgid "Select Hanja key"
 msgstr "한자키를 선택하시오"
 
+#: ../setup/ibus-setup-hangul.desktop.in.h:1
+msgid "IBus Hangul Preferences"
+msgstr "IBus 한글 설정"
+
+#: ../setup/ibus-setup-hangul.desktop.in.h:2
+msgid "Set IBus Hangul Preferences"
+msgstr "IBus 한글 엔진을 설정합니다"
+
 #: ../setup/setup.ui.h:1
+msgid "<b>Etc</b>"
+msgstr "<b>기타</b>"
+
+#: ../setup/setup.ui.h:2
 msgid "<b>Hanja key</b>"
 msgstr "<b>한자키</b>"
 
-#: ../setup/setup.ui.h:2
+#: ../setup/setup.ui.h:3
 msgid "<b>Keyboard Layout</b>"
 msgstr "<b>자판 설정</b>"
 
-#: ../setup/setup.ui.h:3
+#: ../setup/setup.ui.h:4
 msgid "Advanced"
 msgstr "고급"
 
-#: ../setup/setup.ui.h:4
+#: ../setup/setup.ui.h:5
+msgid "Automatic _reordering"
+msgstr "자동 순서 교정(_r)"
+
+#: ../setup/setup.ui.h:6
+msgid "Commit in _word unit"
+msgstr "단어 단위로 입력(_w)"
+
+#: ../setup/setup.ui.h:7
 msgid "Hangul"
 msgstr "한글"
 
-#: ../setup/setup.ui.h:5
+#: ../setup/setup.ui.h:8
 msgid "Hanja"
 msgstr "한자"
 
-#: ../setup/setup.ui.h:6
+#: ../setup/setup.ui.h:9
 msgid "IBusHangul Setup"
 msgstr "IBus 한글 설정"
 
-#: ../setup/setup.ui.h:7
+#: ../setup/setup.ui.h:10
 msgid "_Hangul keyboard:"
 msgstr "한글 자판(_H)"
 
-#: ../src/engine.c:255
+#: ../src/engine.c:350
 msgid "Hanja lock"
 msgstr "한자 전용"
 
-#: ../src/engine.c:256
+#: ../src/engine.c:351
 msgid "Enable/Disable Hanja mode"
 msgstr "한자 전용 모드 선택합니다"
 
-#: ../src/engine.c:267
+#: ../src/engine.c:362
 msgid "Setup"
 msgstr "설정"
 
-#: ../src/engine.c:268
+#: ../src/engine.c:363
 msgid "Configure hangul engine"
 msgstr "한글 입력기를 설정합니다"
 
-#: ../src/main.c:52
-#, fuzzy
+#: ../src/main.c:71
 msgid "Korean input method"
 msgstr "한글 입력기"
 
-#: ../src/main.c:61 ../src/main.c:62
-#, fuzzy
+#: ../src/main.c:80 ../src/main.c:81
 msgid "Korean Input Method"
 msgstr "한글 입력기"
+
+#~ msgid "Dubeolsik"
+#~ msgstr "두벌식"
+
+#~ msgid "Sebeolsik Final"
+#~ msgstr "세벌식 최종"
+
+#~ msgid "Sebeolsik 390"
+#~ msgstr "세벌식 390"
+
+#~ msgid "Sebeolsik No-shift"
+#~ msgstr "세벌식 순아래"
+
+#~ msgid "Sebeolsik 2 set"
+#~ msgstr "세벌식 두벌배열"
+
+#~ msgid "Romaja"
+#~ msgstr "로마자"

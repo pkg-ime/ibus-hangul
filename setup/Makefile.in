@@ -36,6 +36,7 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 
+
 VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
@@ -75,8 +76,9 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-am__installdirs = "$(DESTDIR)$(setuplibdir)" "$(DESTDIR)$(libexecdir)" \
-	"$(DESTDIR)$(setup_hanguldir)" "$(DESTDIR)$(setup_hanguldir)"
+am__installdirs = "$(DESTDIR)$(setuplibdir)" "$(DESTDIR)$(bindir)" \
+	"$(DESTDIR)$(setup_hanguldir)" "$(DESTDIR)$(setup_hanguldir)" \
+	"$(DESTDIR)$(desktopdir)"
 PROGRAMS = $(setuplib_PROGRAMS)
 am_hangul_keyboard_list_OBJECTS =  \
 	hangul_keyboard_list-hangul_keyboard_list.$(OBJEXT)
@@ -108,7 +110,7 @@ am__nobase_list = $(am__nobase_strip_setup); \
 am__base_list = \
   sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
   sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-SCRIPTS = $(libexec_SCRIPTS)
+SCRIPTS = $(bin_SCRIPTS)
 DEFAULT_INCLUDES = -I.@am__isrc@ -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -125,6 +127,7 @@ LINK = $(LIBTOOL) --tag=CC $(AM_LIBTOOLFLAGS) $(LIBTOOLFLAGS) \
 SOURCES = $(hangul_keyboard_list_SOURCES)
 DIST_SOURCES = $(hangul_keyboard_list_SOURCES)
 py_compile = $(top_srcdir)/py-compile
+DATA = $(desktop_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -300,20 +303,25 @@ setup_hangul_PYTHON = \
 
 nodist_setup_hangul_PYTHON = config.py
 setup_hanguldir = $(pkgdatadir)/setup
-libexec_SCRIPTS = ibus-setup-hangul
+bin_SCRIPTS = ibus-setup-hangul
 setuplibdir = $(pkglibdir)/setup
 hangul_keyboard_list_SOURCES = hangul_keyboard_list.c
 hangul_keyboard_list_CFLAGS = $(HANGUL_CFLAGS)
 hangul_keyboard_list_LDADD = $(HANGUL_LIBS)
+desktop_in_files = ibus-setup-hangul.desktop.in
+desktop_DATA = ibus-setup-hangul.desktop
+desktopdir = $(datadir)/applications
 CLEANFILES = \
 	ibus-setup-hangul \
 	config.py \
 	*.pyc \
+	ibus-setup-hangul.desktop \
 	$(NULL)
 
 EXTRA_DIST = \
 	config.py.in \
 	ibus-setup-hangul.in \
+	ibus-setup-hangul.desktop.in \
 	$(NULL)
 
 all: all-am
@@ -396,10 +404,10 @@ clean-setuplibPROGRAMS:
 hangul_keyboard_list$(EXEEXT): $(hangul_keyboard_list_OBJECTS) $(hangul_keyboard_list_DEPENDENCIES) 
 	@rm -f hangul_keyboard_list$(EXEEXT)
 	$(hangul_keyboard_list_LINK) $(hangul_keyboard_list_OBJECTS) $(hangul_keyboard_list_LDADD) $(LIBS)
-install-libexecSCRIPTS: $(libexec_SCRIPTS)
+install-binSCRIPTS: $(bin_SCRIPTS)
 	@$(NORMAL_INSTALL)
-	test -z "$(libexecdir)" || $(MKDIR_P) "$(DESTDIR)$(libexecdir)"
-	@list='$(libexec_SCRIPTS)'; test -n "$(libexecdir)" || list=; \
+	test -z "$(bindir)" || $(MKDIR_P) "$(DESTDIR)$(bindir)"
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
 	for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
@@ -417,19 +425,19 @@ install-libexecSCRIPTS: $(libexec_SCRIPTS)
 	while read type dir files; do \
 	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
 	     test -z "$$files" || { \
-	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(libexecdir)$$dir'"; \
-	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(libexecdir)$$dir" || exit $$?; \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
 	     } \
 	; done
 
-uninstall-libexecSCRIPTS:
+uninstall-binSCRIPTS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(libexec_SCRIPTS)'; test -n "$(libexecdir)" || exit 0; \
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
 	files=`for p in $$list; do echo "$$p"; done | \
 	       sed -e 's,.*/,,;$(transform)'`; \
 	test -n "$$list" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(libexecdir)' && rm -f" $$files ")"; \
-	cd "$(DESTDIR)$(libexecdir)" && rm -f $$files
+	echo " ( cd '$(DESTDIR)$(bindir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(bindir)" && rm -f $$files
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -555,6 +563,26 @@ uninstall-setup_hangulPYTHON:
 	cd "$(DESTDIR)$(setup_hanguldir)" && rm -f $$filesc || exit $$?; \
 	echo " ( cd '$(DESTDIR)$(setup_hanguldir)' && rm -f" $$fileso ")"; \
 	cd "$(DESTDIR)$(setup_hanguldir)" && rm -f $$fileso
+install-desktopDATA: $(desktop_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(desktopdir)" || $(MKDIR_P) "$(DESTDIR)$(desktopdir)"
+	@list='$(desktop_DATA)'; test -n "$(desktopdir)" || list=; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  echo "$$d$$p"; \
+	done | $(am__base_list) | \
+	while read files; do \
+	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(desktopdir)'"; \
+	  $(INSTALL_DATA) $$files "$(DESTDIR)$(desktopdir)" || exit $$?; \
+	done
+
+uninstall-desktopDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(desktop_DATA)'; test -n "$(desktopdir)" || list=; \
+	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
+	test -n "$$files" || exit 0; \
+	echo " ( cd '$(DESTDIR)$(desktopdir)' && rm -f" $$files ")"; \
+	cd "$(DESTDIR)$(desktopdir)" && rm -f $$files
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -640,9 +668,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(SCRIPTS)
+all-am: Makefile $(PROGRAMS) $(SCRIPTS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(setuplibdir)" "$(DESTDIR)$(libexecdir)" "$(DESTDIR)$(setup_hanguldir)" "$(DESTDIR)$(setup_hanguldir)"; do \
+	for dir in "$(DESTDIR)$(setuplibdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(setup_hanguldir)" "$(DESTDIR)$(setup_hanguldir)" "$(DESTDIR)$(desktopdir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -694,14 +722,14 @@ info: info-am
 
 info-am:
 
-install-data-am: install-nodist_setup_hangulPYTHON \
+install-data-am: install-desktopDATA install-nodist_setup_hangulPYTHON \
 	install-setup_hangulPYTHON install-setuplibPROGRAMS
 
 install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am: install-libexecSCRIPTS
+install-exec-am: install-binSCRIPTS
 
 install-html: install-html-am
 
@@ -741,7 +769,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-libexecSCRIPTS \
+uninstall-am: uninstall-binSCRIPTS uninstall-desktopDATA \
 	uninstall-nodist_setup_hangulPYTHON \
 	uninstall-setup_hangulPYTHON uninstall-setuplibPROGRAMS
 
@@ -751,20 +779,21 @@ uninstall-am: uninstall-libexecSCRIPTS \
 	clean-libtool clean-setuplibPROGRAMS ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am \
-	install-libexecSCRIPTS install-man \
+	install install-am install-binSCRIPTS install-data \
+	install-data-am install-desktopDATA install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-man \
 	install-nodist_setup_hangulPYTHON install-pdf install-pdf-am \
 	install-ps install-ps-am install-setup_hangulPYTHON \
 	install-setuplibPROGRAMS install-strip installcheck \
 	installcheck-am installdirs maintainer-clean \
 	maintainer-clean-generic mostlyclean mostlyclean-compile \
 	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-libexecSCRIPTS \
-	uninstall-nodist_setup_hangulPYTHON \
+	tags uninstall uninstall-am uninstall-binSCRIPTS \
+	uninstall-desktopDATA uninstall-nodist_setup_hangulPYTHON \
 	uninstall-setup_hangulPYTHON uninstall-setuplibPROGRAMS
 
+@INTLTOOL_DESKTOP_RULE@
 
 test:
 	$(ENV) DBUS_DEBUG=true \
