@@ -1,2 +1,2 @@
 version=3
-http://googlecode.debian.net/p/ibus/ibus-hangul-(\d+.*)\.tar\.gz
+http://code.google.com/p/ibus/downloads/list?q=ibus-hangul .*/ibus-hangul-(\d[\d.]*)\.(?:tar\.gz|tar\.bz2)

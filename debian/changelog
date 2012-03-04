@@ -1,3 +1,11 @@
+ibus-hangul (1.4.0-2) UNRELEASED; urgency=low
+
+  [ Changwoo Ryu ]
+  * Corrected debian/watch; the googlecode redirector is no longer
+    available.
+
+ -- Changwoo Ryu <cwryu@debian.org>  Mon, 05 Mar 2012 01:53:28 +0900
+
 ibus-hangul (1.4.0-1) unstable; urgency=low
 
   [ Changwoo Ryu ]
